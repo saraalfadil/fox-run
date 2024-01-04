@@ -64,6 +64,11 @@ public class PlayerController : MonoBehaviour
         PermanentUI.perm.cherryText.text = PermanentUI.perm.cherries.ToString();
         PermanentUI.perm.scoreText.text = PermanentUI.perm.score.ToString();
 
+        TrackIdleTime();
+    }
+
+    private void TrackIdleTime() {
+
         // Keep track of elapsed time for idle animation
         _timer += Time.deltaTime;
         if (_timer >= _idle_duration) {
