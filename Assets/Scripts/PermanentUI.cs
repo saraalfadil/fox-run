@@ -32,6 +32,7 @@ public class PermanentUI : MonoBehaviour
 
     public void Reset()
     {
+        health = 5;
         cherries = 0;
         score = 0;
     }

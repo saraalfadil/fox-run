@@ -384,9 +384,8 @@ public class PlayerController : MonoBehaviour
 
         // Reset scene, health and cherries
         SceneManager.LoadScene("Menu");
-        PermanentUI.perm.health = 5;
-        PermanentUI.perm.cherries = 0;
-        PermanentUI.perm.score = 0;
+
+        PermanentUI.perm.Reset();
     }
 
 }

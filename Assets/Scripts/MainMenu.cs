@@ -8,9 +8,7 @@ public class MainMenu : MonoBehaviour
     public void PlayGame() 
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
-        PermanentUI.perm.health = 5;
-        PermanentUI.perm.cherries = 0;
-        PermanentUI.perm.score = 0;
+        PermanentUI.perm.Reset();
     }
 
     public void Quit() 
