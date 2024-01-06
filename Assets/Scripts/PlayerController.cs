@@ -24,6 +24,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float speed = 5f;
     [SerializeField] private float jumpForce = 10f;
     [SerializeField] private float hurtForce = 10f;
+    [SerializeField] private int defeatEnemyScore = 100;
     [SerializeField] private AudioSource footstep;
     [SerializeField] private AudioSource bounceSound;
     [SerializeField] private AudioSource spikesSound;
@@ -109,7 +110,7 @@ public class PlayerController : MonoBehaviour
                 enemy.JumpedOn();
                 Jump();
 
-                PermanentUI.perm.score += 100;
+                PermanentUI.perm.score += defeatEnemyScore;
             }
             else 
             {   
@@ -117,7 +118,7 @@ public class PlayerController : MonoBehaviour
                 if (isInvincible)
                 {
                     enemy.JumpedOn();
-                    PermanentUI.perm.score += 100;
+                    PermanentUI.perm.score += defeatEnemyScore;
                 }
                 else 
                 {   
