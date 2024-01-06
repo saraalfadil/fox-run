@@ -20,10 +20,6 @@ public class Vulture : Enemy
 
     }
 
-    private void Update() 
-    {
-    }   
-
     private void Move() 
     {
         if(facingLeft)
@@ -67,9 +63,6 @@ public class Vulture : Enemy
             }
         }
  
-        //anim.SetBool("idle", true);
-        //anim.SetBool("flying", false);
-        
     }
 
 }

@@ -19,10 +19,6 @@ public class Bunny : Enemy
         coll = GetComponent<Collider2D>();
     }
 
-    private void Update() 
-    {
-    }   
-
     private void Move() 
     {
 

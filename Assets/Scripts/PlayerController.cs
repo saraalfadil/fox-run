@@ -7,7 +7,6 @@ using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
-    // Start() variables
     private Rigidbody2D rb;
     private Animator anim;
     private CircleCollider2D coll;
@@ -34,7 +33,6 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Canvas gameOver;
     private CanvasGroup gameOverCanvasGroup;
 
-    float m_Timer;
     public float fadeDuration = 1f;
     public float displayImageDuration = 1f;
 
