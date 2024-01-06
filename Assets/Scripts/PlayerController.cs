@@ -110,8 +110,8 @@ public class PlayerController : MonoBehaviour
                 // Play feedback sound
                 spikesSound.Play();
 
-                // Jump up a bit
-                rb.velocity = new Vector2(rb.velocity.x, 5f);
+                // Jump up a tiny bit
+                Jump(5f);
 
                 // Player is hurt
                 state = State.hurt;
@@ -174,8 +174,7 @@ public class PlayerController : MonoBehaviour
 
                 BoxPowerup box = other.gameObject.GetComponent<BoxPowerup>();
                 box.Collected();
-                rb.velocity = new Vector2(rb.velocity.x, 10);
-                state = State.jumping;
+                Jump();
 
                 StartCoroutine(PowerupDelay());
 
@@ -189,8 +188,7 @@ public class PlayerController : MonoBehaviour
 
                 BoxPowerup box = other.gameObject.GetComponent<BoxPowerup>();
                 box.Collected();
-                rb.velocity = new Vector2(rb.velocity.x, 10);
-                state = State.jumping;
+                Jump();
 
                 PermanentUI.perm.cherries += 10;
             }
@@ -203,8 +201,7 @@ public class PlayerController : MonoBehaviour
             bounceSound.Play();
 
             // Super jump
-            rb.velocity = new Vector2(rb.velocity.x, 45f);
-            state = State.jumping;
+            Jump(45f);
         
         }
     }
@@ -249,7 +246,6 @@ public class PlayerController : MonoBehaviour
         // Jumping
         if(Input.GetButtonDown("Jump") && coll.IsTouchingLayers(ground))
         {   
-            Debug.Log("jumping");
             Jump();
             hasMoved = true;
             _timer = 0f;
@@ -257,9 +253,10 @@ public class PlayerController : MonoBehaviour
         
     }
 
-    public void Jump() 
-    {
-        rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+    public void Jump(float force = 0f) 
+    {   
+        force = force != 0f ? force : jumpForce;
+        rb.velocity = new Vector2(rb.velocity.x, force);
         state = State.jumping;
     }
 
