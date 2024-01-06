@@ -79,30 +79,6 @@ public class PlayerController : MonoBehaviour
             Cherry cherry = collision.gameObject.GetComponent<Cherry>();
             cherry.Collected();
         }
-        if(collision.tag == "Powerup")
-        {
-            // Remove powerup object
-            Destroy(collision.gameObject);
-            
-            // Limit powerup effect activation period
-            StartCoroutine(ResetInvinsiblePowerUp());
-            
-            // Play feedback sound
-            powerupSound.Play();
-
-            if(!isInvincible) 
-            {   // Change main music
-                AudioSource[] allAudios = Camera.main.gameObject.GetComponents<AudioSource>();
-                allAudios[0].Stop(); // stop main audio
-                allAudios[1].Play(); // play invincible power up audio
-            }
-
-            // Display particle system 
-            part = GetComponentInChildren<ParticleSystem>();
-            part.Play();
-
-            isInvincible = true;
-        }
         if(collision.tag == "Spikes")
         {   
 
@@ -168,7 +144,7 @@ public class PlayerController : MonoBehaviour
         }
 
         if(other.gameObject.tag == "BoxPowerup")
-        {
+        {   
             if(state == State.falling)
             {
 
