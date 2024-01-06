@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
@@ -19,7 +18,6 @@ public class PlayerController : MonoBehaviour
     private bool hasMoved = true;
     private float _timer = 0f;
     private float _idle_duration = 6f;
-    private bool isGameOver = false;
 
     // Inspector variables
     [SerializeField] private LayerMask ground;
@@ -30,8 +28,6 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private AudioSource bounceSound;
     [SerializeField] private AudioSource spikesSound;
     [SerializeField] private AudioSource powerupSound;
-    [SerializeField] private Canvas gameOver;
-    private CanvasGroup gameOverCanvasGroup;
 
     public float fadeDuration = 1f;
     public float displayImageDuration = 1f;
@@ -220,38 +216,13 @@ public class PlayerController : MonoBehaviour
         PermanentUI.perm.healthStat.text = PermanentUI.perm.health.ToString();
         if(PermanentUI.perm.health <= 0)
         {   
-
             // Show game over
-            if (!isGameOver)
-                this.GameOver();
+            PermanentUI.perm.GameOver();
         } 
         else 
         {
             PermanentUI.perm.health -= 1;
         }
-    }
-    
-
-    private void GameOver()
-    {
-        isGameOver = true;
-
-        // stop main audio
-        AudioSource[] allAudios = Camera.main.gameObject.GetComponents<AudioSource>();
-        allAudios[0].Stop(); 
-
-        // Play game over audio
-        AudioSource gameOverAudio = gameOver.GetComponent<AudioSource>();
-        gameOverAudio.Play();
-
-        // Freeze time
-        Time.timeScale = 0;
-
-        // Display game over canvas overlay
-        gameOverCanvasGroup = gameOver.GetComponent<CanvasGroup>();
-        gameOverCanvasGroup.alpha = 1;
-
-        StartCoroutine(GameOverReset());
     }
 
     private void Movement()
@@ -370,22 +341,6 @@ public class PlayerController : MonoBehaviour
         part.Play();
 
         isInvincible = true;
-    }
-
-    private IEnumerator GameOverReset()
-    {
-        // Resume time
-        float pauseEndTime = Time.realtimeSinceStartup + 6;
-        while (Time.realtimeSinceStartup < pauseEndTime)
-        {
-            yield return 0;
-        }
-        Time.timeScale = 1;
-
-        // Reset scene, health and cherries
-        SceneManager.LoadScene("Menu");
-
-        PermanentUI.perm.Reset();
     }
 
 }
