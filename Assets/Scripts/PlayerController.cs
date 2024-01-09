@@ -91,8 +91,7 @@ public class PlayerController : MonoBehaviour
                 Jump(5f);
 
                 // Player is hurt
-                state = State.hurt;
-                HandleHealth();
+                DecreaseHealth();
             }
 
         }
@@ -123,8 +122,7 @@ public class PlayerController : MonoBehaviour
                 else 
                 {   
                     // Player gets hurt
-                    state = State.hurt;
-                    HandleHealth();
+                    DecreaseHealth();
 
                     // Enemy is to my right
                     if(enemy.transform.position.x > transform.position.x)
@@ -184,7 +182,7 @@ public class PlayerController : MonoBehaviour
     }
 
 
-    private void HandleHealth()
+    private void DecreaseHealth()
     {
 
         PermanentUI.perm.healthStat.text = PermanentUI.perm.health.ToString();
@@ -195,6 +193,7 @@ public class PlayerController : MonoBehaviour
         } 
         else 
         {
+            state = State.hurt;
             PermanentUI.perm.health -= 1;
         }
     }
@@ -208,26 +207,28 @@ public class PlayerController : MonoBehaviour
         {
             rb.velocity = new Vector2(-speed, rb.velocity.y);
             transform.localScale = new Vector2(-1, 1);
-            hasMoved = true;
-            _timer = 0f;
+            HasMoved();
         } 
         // Moving right
         else if(hDirection > 0)
         {
             rb.velocity = new Vector2(speed, rb.velocity.y);
             transform.localScale = new Vector2(1, 1);
-            hasMoved = true;
-            _timer = 0f;
+            HasMoved();
         } 
 
         // Jumping
         if(Input.GetButtonDown("Jump") && coll.IsTouchingLayers(ground))
         {   
             Jump();
-            hasMoved = true;
-            _timer = 0f;
         } 
         
+    }
+
+    private void HasMoved()
+    {
+        hasMoved = true;
+        _timer = 0f; // reset timer
     }
 
     public void Jump(float force = 0f) 
@@ -235,6 +236,7 @@ public class PlayerController : MonoBehaviour
         force = force != 0f ? force : jumpForce;
         rb.velocity = new Vector2(rb.velocity.x, force);
         state = State.jumping;
+        HasMoved();
     }
 
     private void PlayFootstep() 
