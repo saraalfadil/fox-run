@@ -45,6 +45,7 @@ public class PlayerController : MonoBehaviour
         anim = GetComponent<Animator>();
         coll = GetComponent<CircleCollider2D>(); 
         sprite = GetComponent<SpriteRenderer>();
+        AudioSource[] allAudios = Camera.main.gameObject.GetComponents<AudioSource>();
         Health();
     }
 
@@ -217,7 +218,6 @@ public class PlayerController : MonoBehaviour
             PermanentUI.perm.health -= 1;
             PermanentUI.perm.cherries = 0;
             LoseCherries();
-            
         }
         
     }
@@ -286,7 +286,7 @@ public class PlayerController : MonoBehaviour
         }
         else if(state == State.hurt)
         {
-            StartCoroutine(ResumeIdleAfterHurt);
+            StartCoroutine(ResumeIdleAfterHurt());
         }
         else if(Mathf.Abs(rb.velocity.x) > 2f)
         {
@@ -369,7 +369,7 @@ public class PlayerController : MonoBehaviour
 
         if(!isInvincible) 
         {   // Change main music
-            AudioSource[] allAudios = Camera.main.gameObject.GetComponents<AudioSource>();
+            
             allAudios[0].Stop(); // stop main audio
             allAudios[1].Play(); // play invincible power up audio
         }
