@@ -35,12 +35,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private AudioSource bounceSound;
     [SerializeField] private AudioSource spikesSound;
     [SerializeField] private AudioSource powerupSound;
-
-    public float fadeDuration = 1f;
-    public float displayImageDuration = 1f;
     public GameObject collectable;
     private List<GameObject> collectables = new List<GameObject>();
-
     public bool isJumping { get { return state == State.jumping; } }
     private bool isFlashing = false;
 
