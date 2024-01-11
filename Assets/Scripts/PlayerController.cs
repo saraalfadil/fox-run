@@ -9,7 +9,7 @@ public class PlayerController : MonoBehaviour
     private Rigidbody2D rb;
     private Animator anim;
     private CircleCollider2D coll;
-    private ParticleSystem part;
+    private ParticleSystem invincibleParticles;
     // FSM
     private enum State { idle, running, jumping, falling, hurt, waiting };
     private State state = State.idle;
@@ -31,11 +31,13 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float jumpForce = 10f;
     [SerializeField] private float hurtForce = 10f;
     [SerializeField] private int defeatEnemyScore = 100;
+    [SerializeField] private GameObject collectable;
     [SerializeField] private AudioSource footstep;
     [SerializeField] private AudioSource bounceSound;
     [SerializeField] private AudioSource spikesSound;
     [SerializeField] private AudioSource powerupSound;
-    public GameObject collectable;
+    private AudioSource mainAudio;
+    private AudioSource invincibleAudio;
     private List<GameObject> collectables = new List<GameObject>();
     public bool isJumping { get { return state == State.jumping; } }
     private bool isFlashing = false;
@@ -45,7 +47,11 @@ public class PlayerController : MonoBehaviour
         anim = GetComponent<Animator>();
         coll = GetComponent<CircleCollider2D>(); 
         sprite = GetComponent<SpriteRenderer>();
+
         AudioSource[] allAudios = Camera.main.gameObject.GetComponents<AudioSource>();
+        mainAudio = allAudios[0];
+        invincibleAudio = allAudios[1];
+
         Health();
     }
 
@@ -54,7 +60,6 @@ public class PlayerController : MonoBehaviour
         PermanentUI.perm.healthStat.text = PermanentUI.perm.health.ToString();
     }
 
-    // Update is called once per frame
     private void Update()
     {
         if(state != State.hurt) 
@@ -119,8 +124,7 @@ public class PlayerController : MonoBehaviour
             {
                 enemy.JumpedOn();
                 Jump();
-
-                PermanentUI.perm.score += defeatEnemyScore;
+                IncreaseScore();
             }
             else 
             {   
@@ -128,24 +132,13 @@ public class PlayerController : MonoBehaviour
                 if (isInvincible)
                 {
                     enemy.JumpedOn();
-                    PermanentUI.perm.score += defeatEnemyScore;
+                    IncreaseScore();
                 }
                 else 
                 {   
                     // Player gets hurt
                     DecreaseHealth();
-
-                    // Enemy is to my right
-                    if(enemy.transform.position.x > transform.position.x)
-                    {
-                        // I should be damaged and move left
-                        rb.velocity = new Vector2(-hurtForce, rb.velocity.y);
-                    }
-                    else // Enemy is to my left 
-                    {
-                        // I should be damaged and move right
-                        rb.velocity = new Vector2(hurtForce, rb.velocity.y);
-                    }
+                    PushPlayer(enemy);
                     
                 }
             }
@@ -199,6 +192,10 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    private void IncreaseScore()
+    {
+        PermanentUI.perm.score += defeatEnemyScore;
+    }
 
     private void DecreaseHealth()
     {
@@ -220,6 +217,21 @@ public class PlayerController : MonoBehaviour
             LoseCherries();
         }
         
+    }
+
+    private void PushPlayer(Enemy enemy)
+    {
+        // Enemy is to my right
+        if(enemy.transform.position.x > transform.position.x)
+        {
+            // I should be damaged and move left
+            rb.velocity = new Vector2(-hurtForce, rb.velocity.y);
+        }
+        else // Enemy is to my left 
+        {
+            // I should be damaged and move right
+            rb.velocity = new Vector2(hurtForce, rb.velocity.y);
+        }
     }
 
     private void Movement()
@@ -309,18 +321,18 @@ public class PlayerController : MonoBehaviour
         {
             state = State.idle;
         }
-        StartFlashAnimation();
+        StartPlayerFlashAnimation();
     }
 
-    public void StartFlashAnimation()
+    public void StartPlayerFlashAnimation()
     {
         if (!isFlashing)
         {
-            StartCoroutine(Flash());
+            StartCoroutine(PlayerFlash());
         }
     }
 
-    private IEnumerator Flash()
+    private IEnumerator PlayerFlash()
     {
         isFlashing = true;
 
@@ -350,12 +362,11 @@ public class PlayerController : MonoBehaviour
         isInvincible = false;
 
         /// Change main music back
-        AudioSource[] allAudios = Camera.main.gameObject.GetComponents<AudioSource>();
-        allAudios[1].Stop(); // stop invincible power up audio
-        allAudios[0].Play(); // play main audio again
+        invincibleAudio.Stop(); // stop invincible power up audio
+        mainAudio.Play(); // play main audio again
         
         // Stop invincible power up particle effect
-        part.Stop();
+        invincibleParticles.Stop();
     }
 
     private IEnumerator PowerupDelay()
@@ -364,19 +375,15 @@ public class PlayerController : MonoBehaviour
         // Limit powerup effect activation period
         StartCoroutine(ResetInvinsiblePowerUp());
         
-        // Play feedback sound
-        //powerupSound.Play();
-
         if(!isInvincible) 
         {   // Change main music
-            
-            allAudios[0].Stop(); // stop main audio
-            allAudios[1].Play(); // play invincible power up audio
+            mainAudio.Stop(); // stop main audio
+            invincibleAudio.Play(); // play invincible power up audio
         }
 
         // Display particle system 
-        part = GetComponentInChildren<ParticleSystem>();
-        part.Play();
+        invincibleParticles = GetComponentInChildren<ParticleSystem>();
+        invincibleParticles.Play();
 
         isInvincible = true;
     }
@@ -392,7 +399,7 @@ public class PlayerController : MonoBehaviour
             // semicircle (180 degrees)
             float angle = i * Mathf.PI / (numberOfCherries - 1);
             
-            float radius = 2f;
+            float radius = 2.5f;
             float x = Mathf.Cos(angle) * radius;
             float y = Mathf.Sin(angle) * radius;
             
