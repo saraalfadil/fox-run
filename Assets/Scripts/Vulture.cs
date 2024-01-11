@@ -9,7 +9,6 @@ public class Vulture : Enemy
     [SerializeField] private float leftCap;
     [SerializeField] private float rightCap;
     [SerializeField] private float jumpLength = 2f;
-    [SerializeField] private float jumpHeight = 1f;
     [SerializeField] private LayerMask ground;
     private bool facingLeft = true;
 
@@ -17,7 +16,6 @@ public class Vulture : Enemy
     {
         base.Start();
         coll = GetComponent<Collider2D>();
-
     }
 
     private void Move() 
