@@ -10,14 +10,20 @@ public class PlayerController : MonoBehaviour
     private Animator anim;
     private CircleCollider2D coll;
     private ParticleSystem part;
-
     // FSM
     private enum State { idle, running, jumping, falling, hurt, waiting };
     private State state = State.idle;
     private bool isInvincible = false;
     private bool hasMoved = true;
-    private float _timer = 0f;
-    private float _idle_duration = 6f;
+    private float idleTimer = 0f;
+    private float idleDuration = 6f;
+    private bool noDamage = false;
+    private float noDamageTimer = 0f;
+    private float noDamageDuration = 5f;
+    private bool dropCherries = false;
+    private float cherriesTimer = 0f;
+    private float cherriesDuration = 1f;
+    protected SpriteRenderer sprite;
 
     // Inspector variables
     [SerializeField] private LayerMask ground;
@@ -32,13 +38,20 @@ public class PlayerController : MonoBehaviour
 
     public float fadeDuration = 1f;
     public float displayImageDuration = 1f;
+    public GameObject collectable;
+    private List<GameObject> collectables = new List<GameObject>();
 
     public bool isJumping { get { return state == State.jumping; } }
+
+    public float flashDuration = 2.0f; // Adjust the duration of the flash
+    public float flashSpeed = 5.0f; // Adjust the speed of the flash
+    private bool isFlashing = false;
 
     private void Start() {
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
         coll = GetComponent<CircleCollider2D>(); 
+        sprite = GetComponent<SpriteRenderer>();
         Health();
     }
 
@@ -60,14 +73,17 @@ public class PlayerController : MonoBehaviour
         PermanentUI.perm.scoreText.text = PermanentUI.perm.score.ToString();
 
         TrackIdleTime();
+
+        UpdateLostCherriesAnimation();
+
     }
 
     private void TrackIdleTime() {
 
         // Keep track of elapsed time for idle animation
-        _timer += Time.deltaTime;
-        if (_timer >= _idle_duration) {
-            _timer = 0f;
+        idleTimer += Time.deltaTime;
+        if (idleTimer >= idleDuration) {
+            idleTimer = 0f;
             hasMoved = false;
         }
 
@@ -79,6 +95,7 @@ public class PlayerController : MonoBehaviour
         {
             Cherry cherry = collision.gameObject.GetComponent<Cherry>();
             cherry.Collected();
+            collectables.Remove(collision.gameObject);
         }
         if(collision.tag == "Spikes")
         {   
@@ -157,7 +174,7 @@ public class PlayerController : MonoBehaviour
         }
     
         if(other.gameObject.tag == "BoxPowerupCherry")
-        {
+        {   
             if(state == State.falling)
             {
 
@@ -179,12 +196,22 @@ public class PlayerController : MonoBehaviour
             Jump(45f);
         
         }
+
+        if(other.gameObject.tag == "Collectable")
+        {
+            Cherry cherry = other.gameObject.GetComponent<Cherry>();
+            cherry.Collected();
+            collectables.Remove(other.gameObject);
+        }
     }
 
 
     private void DecreaseHealth()
     {
 
+        if (noDamage)
+            return;
+        
         PermanentUI.perm.healthStat.text = PermanentUI.perm.health.ToString();
         if(PermanentUI.perm.health <= 0)
         {   
@@ -195,7 +222,11 @@ public class PlayerController : MonoBehaviour
         {
             state = State.hurt;
             PermanentUI.perm.health -= 1;
+            PermanentUI.perm.cherries = 0;
+            LoseCherries();
+            
         }
+        
     }
 
     private void Movement()
@@ -228,7 +259,7 @@ public class PlayerController : MonoBehaviour
     private void HasMoved()
     {
         hasMoved = true;
-        _timer = 0f; // reset timer
+        idleTimer = 0f; // reset timer
     }
 
     public void Jump(float force = 0f) 
@@ -317,6 +348,72 @@ public class PlayerController : MonoBehaviour
         part.Play();
 
         isInvincible = true;
+    }
+
+    private void LoseCherries()
+    {   
+
+        noDamage = true;
+        int numberOfCherries = 6;
+        
+        for (int i = 0; i < numberOfCherries; i++)
+        {
+            // semicircle (180 degrees)
+            float angle = i * Mathf.PI / (numberOfCherries - 1);
+            
+            float radius = 2f;
+            float x = Mathf.Cos(angle) * radius;
+            float y = Mathf.Sin(angle) * radius;
+            
+            Vector3 pos = transform.position + new Vector3(x, y, 0);
+
+            collectables.Add((GameObject)Instantiate(collectable, pos, Quaternion.identity));
+        }
+        
+
+    }
+    
+    private void UpdateLostCherriesAnimation() {
+
+        // Keep track of temporary invincibility
+        noDamageTimer += Time.deltaTime;
+        if (noDamageTimer >= noDamageDuration) {
+            noDamageTimer = 0f;
+            noDamage = false;
+        }
+        // Keep track of when cherries are suspended
+        cherriesTimer += Time.deltaTime;
+        if (cherriesTimer >= cherriesDuration) {
+            cherriesTimer = 0f;
+            dropCherries = true;
+        }
+
+        // Increase the radius of the circle gradually
+        float radiusIncreaseRate = 0.5f;
+        for (int i = collectables.Count - 1; i >= 0; i--)
+        {     
+
+            if (collectables[i] == null || collectables[i].GetComponent<Cherry>() == null)
+            {
+                collectables.RemoveAt(i);
+                continue;
+            }
+
+            float angle = i * Mathf.PI * 2 / collectables.Count;
+            float x = Mathf.Cos(angle) * (.01f + radiusIncreaseRate * Time.deltaTime);
+            float y = Mathf.Sin(angle) * (.01f + radiusIncreaseRate * Time.deltaTime);
+
+            Cherry cherry = collectables[i].GetComponent<Cherry>();
+
+            // Continuously update position
+            Vector3 newPos = cherry.transform.position + new Vector3(x, y, 0);
+            cherry.transform.position = newPos;
+
+            // Drop cherries to ground
+            if(dropCherries) 
+                cherry.ChangeCollider();
+
+        }
     }
 
 }

@@ -76,7 +76,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 536330453
-  m_SortingLayer: 2
+  m_SortingLayer: 5
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 72de0c64f2c6a498096698322c976a67, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -132,9 +132,15 @@ MonoBehaviour:
     m_Bits: 64
   speed: 7
   jumpForce: 15
-  cherries: 0
-  cherryText: {fileID: 0}
   hurtForce: 10
+  defeatEnemyScore: 100
+  footstep: {fileID: 0}
+  bounceSound: {fileID: 0}
+  spikesSound: {fileID: 0}
+  powerupSound: {fileID: 0}
+  fadeDuration: 1
+  displayImageDuration: 1
+  collectable: {fileID: 6773701334852983436, guid: e2141792c1351174c8e9d3cda55c0f54, type: 3}
 --- !u!50 &3780258492542464037
 Rigidbody2D:
   serializedVersion: 4
