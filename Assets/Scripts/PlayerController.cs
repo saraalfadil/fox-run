@@ -42,9 +42,6 @@ public class PlayerController : MonoBehaviour
     private List<GameObject> collectables = new List<GameObject>();
 
     public bool isJumping { get { return state == State.jumping; } }
-
-    public float flashDuration = 2.0f; // Adjust the duration of the flash
-    public float flashSpeed = 5.0f; // Adjust the speed of the flash
     private bool isFlashing = false;
 
     private void Start() {
@@ -293,10 +290,7 @@ public class PlayerController : MonoBehaviour
         }
         else if(state == State.hurt)
         {
-            if(Mathf.Abs(rb.velocity.x) < .1f)
-            {
-                state = State.idle;
-            }
+            StartCoroutine(ResumeIdleAfterHurt);
         }
         else if(Mathf.Abs(rb.velocity.x) > 2f)
         {
@@ -312,6 +306,47 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    private IEnumerator ResumeIdleAfterHurt()
+    {
+        yield return new WaitForSeconds(.5f);
+        if(Mathf.Abs(rb.velocity.x) < .1f)
+        {
+            state = State.idle;
+        }
+        StartFlashAnimation();
+    }
+
+    public void StartFlashAnimation()
+    {
+        if (!isFlashing)
+        {
+            StartCoroutine(Flash());
+        }
+    }
+
+    private IEnumerator Flash()
+    {
+        isFlashing = true;
+
+        float elapsedTime = 0f;
+        float flashDuration = 2.0f;
+        float flashSpeed = 5.0f;
+        Color originalColor = sprite.color;
+
+        while (elapsedTime < flashDuration)
+        {
+            float newColor = Mathf.PingPong(elapsedTime * flashSpeed, 1f);
+            Color flashColor = new Color(originalColor.r, originalColor.g, originalColor.b, newColor);
+            sprite.color = flashColor;
+
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        sprite.color = originalColor;
+
+        isFlashing = false;
+    }
     private IEnumerator ResetInvinsiblePowerUp()
     {
         yield return new WaitForSeconds(20);
