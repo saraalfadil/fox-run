@@ -138,7 +138,7 @@ public class PlayerController : MonoBehaviour
                 {   
                     // Player gets hurt
                     DecreaseHealth();
-                    PushPlayer(enemy);
+                    KnockPlayerBack(enemy);
                     
                 }
             }
@@ -184,7 +184,7 @@ public class PlayerController : MonoBehaviour
         
         }
 
-        if(other.gameObject.tag == "Collectable")
+        if(other.gameObject.tag == "Collectable" && state != State.hurt)
         {
             Cherry cherry = other.gameObject.GetComponent<Cherry>();
             cherry.Collected();
@@ -219,18 +219,18 @@ public class PlayerController : MonoBehaviour
         
     }
 
-    private void PushPlayer(Enemy enemy)
+    private void KnockPlayerBack(Enemy enemy)
     {
         // Enemy is to my right
         if(enemy.transform.position.x > transform.position.x)
         {
             // I should be damaged and move left
-            rb.velocity = new Vector2(-hurtForce, rb.velocity.y);
+            rb.velocity = new Vector2(-hurtForce, 5);
         }
         else // Enemy is to my left 
         {
             // I should be damaged and move right
-            rb.velocity = new Vector2(hurtForce, rb.velocity.y);
+            rb.velocity = new Vector2(hurtForce, 5);
         }
     }
 
@@ -316,12 +316,12 @@ public class PlayerController : MonoBehaviour
 
     private IEnumerator ResumeIdleAfterHurt()
     {
+        StartPlayerFlashAnimation();
         yield return new WaitForSeconds(.5f);
         if(Mathf.Abs(rb.velocity.x) < .1f)
         {
             state = State.idle;
-        }
-        StartPlayerFlashAnimation();
+        }     
     }
 
     public void StartPlayerFlashAnimation()
@@ -337,7 +337,7 @@ public class PlayerController : MonoBehaviour
         isFlashing = true;
 
         float elapsedTime = 0f;
-        float flashDuration = 2.0f;
+        float flashDuration = 2.5f;
         float flashSpeed = 5.0f;
         Color originalColor = sprite.color;
 
@@ -352,8 +352,8 @@ public class PlayerController : MonoBehaviour
         }
 
         sprite.color = originalColor;
-
         isFlashing = false;
+        
     }
     private IEnumerator ResetInvinsiblePowerUp()
     {
