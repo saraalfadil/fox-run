@@ -209,7 +209,7 @@ public class PlayerController : MonoBehaviour
     {
 
         // Player is temporarily protected from taking damage
-        if(preventDamage || PermanentUI.perm.cherries > 1)
+        if(preventDamage)
             return;
         
         PermanentUI.perm.healthStat.text = PermanentUI.perm.health.ToString();
@@ -219,14 +219,19 @@ public class PlayerController : MonoBehaviour
             PermanentUI.perm.GameOver();
         } 
         else 
-        {
-            state = State.hurt;
-            PermanentUI.perm.health -= 1;
-            PermanentUI.perm.cherries = 0;
+        {   
             preventDamage = true;
+            state = State.hurt;
 
+            // If player doesn't have any cherries, decrease health
+            if(PermanentUI.perm.cherries < 1)
+                PermanentUI.perm.health -= 1;
+
+            // Lose collected cherries
+            PermanentUI.perm.cherries = 0;
             Vector3 playerPosition = transform.position;
             cherryCollection.ScatterCherries(playerPosition);
+
         }
         
     }
