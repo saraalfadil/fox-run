@@ -208,7 +208,8 @@ public class PlayerController : MonoBehaviour
     private void DecreaseHealth()
     {
 
-        if (preventDamage)
+        // Player is temporarily protected from taking damage
+        if(preventDamage || PermanentUI.perm.cherries > 1)
             return;
         
         PermanentUI.perm.healthStat.text = PermanentUI.perm.health.ToString();
