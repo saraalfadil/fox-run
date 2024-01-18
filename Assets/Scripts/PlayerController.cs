@@ -1,14 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
-using TMPro;
+
 public class PlayerController : MonoBehaviour
 {
     private Rigidbody2D rb;
     private Animator anim;
     private CircleCollider2D coll;
     private ParticleSystem invincibleParticles;
+    protected SpriteRenderer sprite;
+    private AudioSource mainAudio;
+    private AudioSource invincibleAudio;
     // FSM
     private enum State { idle, running, jumping, falling, hurt, waiting };
     private State state = State.idle;
@@ -18,8 +20,9 @@ public class PlayerController : MonoBehaviour
     private float idleDuration = 6f;
     private bool preventDamage = false;
     private float preventDamageTimer = 0f;
-    private float preventDamageDuration = 5f;
-    protected SpriteRenderer sprite;
+    private float preventDamageDuration = 3f;
+    public bool isJumping { get { return state == State.jumping; } }
+    private bool isFlashing = false;
 
     // Inspector variables
     [SerializeField] private LayerMask ground;
@@ -31,11 +34,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private AudioSource bounceSound;
     [SerializeField] private AudioSource spikesSound;
     [SerializeField] private AudioSource powerupSound;
-    private AudioSource mainAudio;
-    private AudioSource invincibleAudio;
-    public bool isJumping { get { return state == State.jumping; } }
-    private bool isFlashing = false;
-    public CherryCollection cherryCollection;
+    [SerializeField] private CherryCollection cherryCollection;
 
     private void Start() {
         rb = GetComponent<Rigidbody2D>();
@@ -102,7 +101,6 @@ public class PlayerController : MonoBehaviour
         {
             Cherry cherry = collision.gameObject.GetComponent<Cherry>();
             cherry.Collected();
-            //collectables.Remove(collision.gameObject);
         }
         if(collision.tag == "Spikes")
         {   
@@ -192,11 +190,10 @@ public class PlayerController : MonoBehaviour
         
         }
 
-        if(other.gameObject.tag == "Collectable" && state != State.hurt)
+        if(other.gameObject.tag == "Collectable" && !preventDamage)
         {
             Cherry cherry = other.gameObject.GetComponent<Cherry>();
             cherry.Collected();
-            //collectables.Remove(other.gameObject);
         }
     }
 
@@ -354,7 +351,7 @@ public class PlayerController : MonoBehaviour
         isFlashing = true;
 
         float elapsedTime = 0f;
-        float flashDuration = 2.5f;
+        float flashDuration = 3f;
         float flashSpeed = 5.0f;
         Color originalColor = sprite.color;
 

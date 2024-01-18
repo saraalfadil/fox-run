@@ -22,7 +22,6 @@ public class CherryCollection : MonoBehaviour
             dropCherries = true;
         }
 
-        // Increase the radius of the circle gradually
         float radiusIncreaseRate = 0.5f;
         for (int i = collectables.Count - 1; i >= 0; i--)
         {     
@@ -33,6 +32,7 @@ public class CherryCollection : MonoBehaviour
                 continue;
             }
 
+            // Increase the radius of the circle gradually
             float angle = i * Mathf.PI * 2 / collectables.Count;
             float x = Mathf.Cos(angle) * (.01f + radiusIncreaseRate * Time.deltaTime);
             float y = Mathf.Sin(angle) * (.01f + radiusIncreaseRate * Time.deltaTime);
@@ -50,6 +50,7 @@ public class CherryCollection : MonoBehaviour
         }
     }
 
+    // Instantiates several cherry game objects in a semicircle from the player's current position
     public void ScatterCherries(Vector3 player_position)
     {   
 
