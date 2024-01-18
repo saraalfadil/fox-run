@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-
 public class PlayerController : MonoBehaviour
 {
     private Rigidbody2D rb;
@@ -17,12 +16,9 @@ public class PlayerController : MonoBehaviour
     private bool hasMoved = true;
     private float idleTimer = 0f;
     private float idleDuration = 6f;
-    private bool noDamage = false;
-    private float noDamageTimer = 0f;
-    private float noDamageDuration = 5f;
-    private bool dropCherries = false;
-    private float cherriesTimer = 0f;
-    private float cherriesDuration = 1f;
+    private bool preventDamage = false;
+    private float preventDamageTimer = 0f;
+    private float preventDamageDuration = 5f;
     protected SpriteRenderer sprite;
 
     // Inspector variables
@@ -31,22 +27,22 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float jumpForce = 10f;
     [SerializeField] private float hurtForce = 10f;
     [SerializeField] private int defeatEnemyScore = 100;
-    [SerializeField] private GameObject collectable;
     [SerializeField] private AudioSource footstep;
     [SerializeField] private AudioSource bounceSound;
     [SerializeField] private AudioSource spikesSound;
     [SerializeField] private AudioSource powerupSound;
     private AudioSource mainAudio;
     private AudioSource invincibleAudio;
-    private List<GameObject> collectables = new List<GameObject>();
     public bool isJumping { get { return state == State.jumping; } }
     private bool isFlashing = false;
+    public CherryCollection cherryCollection;
 
     private void Start() {
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
         coll = GetComponent<CircleCollider2D>(); 
         sprite = GetComponent<SpriteRenderer>();
+        cherryCollection = GetComponent<CherryCollection>();
 
         AudioSource[] allAudios = Camera.main.gameObject.GetComponents<AudioSource>();
         mainAudio = allAudios[0];
@@ -73,7 +69,7 @@ public class PlayerController : MonoBehaviour
 
         TrackIdleTime();
 
-        UpdateLostCherriesAnimation();
+        TrackTemporaryInvincibility();
 
     }
 
@@ -88,13 +84,24 @@ public class PlayerController : MonoBehaviour
 
     }
 
+    private void TrackTemporaryInvincibility() {
+
+        // Keep track of temporary invincibility
+        preventDamageTimer += Time.deltaTime;
+        if (preventDamageTimer >= preventDamageDuration) {
+            preventDamageTimer = 0f;
+            preventDamage = false;
+        }
+
+    }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if(collision.tag == "Collectable")
         {
             Cherry cherry = collision.gameObject.GetComponent<Cherry>();
             cherry.Collected();
-            collectables.Remove(collision.gameObject);
+            //collectables.Remove(collision.gameObject);
         }
         if(collision.tag == "Spikes")
         {   
@@ -188,7 +195,7 @@ public class PlayerController : MonoBehaviour
         {
             Cherry cherry = other.gameObject.GetComponent<Cherry>();
             cherry.Collected();
-            collectables.Remove(other.gameObject);
+            //collectables.Remove(other.gameObject);
         }
     }
 
@@ -200,7 +207,7 @@ public class PlayerController : MonoBehaviour
     private void DecreaseHealth()
     {
 
-        if (noDamage)
+        if (preventDamage)
             return;
         
         PermanentUI.perm.healthStat.text = PermanentUI.perm.health.ToString();
@@ -214,7 +221,10 @@ public class PlayerController : MonoBehaviour
             state = State.hurt;
             PermanentUI.perm.health -= 1;
             PermanentUI.perm.cherries = 0;
-            LoseCherries();
+            preventDamage = true;
+
+            Vector3 playerPosition = transform.position;
+            cherryCollection.ScatterCherries(playerPosition);
         }
         
     }
@@ -386,72 +396,6 @@ public class PlayerController : MonoBehaviour
         invincibleParticles.Play();
 
         isInvincible = true;
-    }
-
-    private void LoseCherries()
-    {   
-
-        noDamage = true;
-        int numberOfCherries = 6;
-        
-        for (int i = 0; i < numberOfCherries; i++)
-        {
-            // semicircle (180 degrees)
-            float angle = i * Mathf.PI / (numberOfCherries - 1);
-            
-            float radius = 2.5f;
-            float x = Mathf.Cos(angle) * radius;
-            float y = Mathf.Sin(angle) * radius;
-            
-            Vector3 pos = transform.position + new Vector3(x, y, 0);
-
-            collectables.Add((GameObject)Instantiate(collectable, pos, Quaternion.identity));
-        }
-        
-
-    }
-    
-    private void UpdateLostCherriesAnimation() {
-
-        // Keep track of temporary invincibility
-        noDamageTimer += Time.deltaTime;
-        if (noDamageTimer >= noDamageDuration) {
-            noDamageTimer = 0f;
-            noDamage = false;
-        }
-        // Keep track of when cherries are suspended
-        cherriesTimer += Time.deltaTime;
-        if (cherriesTimer >= cherriesDuration) {
-            cherriesTimer = 0f;
-            dropCherries = true;
-        }
-
-        // Increase the radius of the circle gradually
-        float radiusIncreaseRate = 0.5f;
-        for (int i = collectables.Count - 1; i >= 0; i--)
-        {     
-
-            if (collectables[i] == null || collectables[i].GetComponent<Cherry>() == null)
-            {
-                collectables.RemoveAt(i);
-                continue;
-            }
-
-            float angle = i * Mathf.PI * 2 / collectables.Count;
-            float x = Mathf.Cos(angle) * (.01f + radiusIncreaseRate * Time.deltaTime);
-            float y = Mathf.Sin(angle) * (.01f + radiusIncreaseRate * Time.deltaTime);
-
-            Cherry cherry = collectables[i].GetComponent<Cherry>();
-
-            // Continuously update position
-            Vector3 newPos = cherry.transform.position + new Vector3(x, y, 0);
-            cherry.transform.position = newPos;
-
-            // Drop cherries to ground
-            if(dropCherries) 
-                cherry.ChangeCollider();
-
-        }
     }
 
 }
