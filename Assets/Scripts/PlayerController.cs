@@ -48,12 +48,13 @@ public class PlayerController : MonoBehaviour
         mainAudio = allAudios[0];
         invincibleAudio = allAudios[1];
 
-        Health();
     }
 
-    private void Health()
+    private void GetStats()
     {
         PermanentUI.perm.healthStat.text = PermanentUI.perm.health.ToString();
+        PermanentUI.perm.cherryText.text = PermanentUI.perm.cherries.ToString();
+        PermanentUI.perm.scoreText.text = PermanentUI.perm.score.ToString();
     }
 
     private void Update()
@@ -64,8 +65,8 @@ public class PlayerController : MonoBehaviour
         }
         AnimationState();
         anim.SetInteger("state", (int)state); // set animation based on Enumerator state
-        PermanentUI.perm.cherryText.text = PermanentUI.perm.cherries.ToString();
-        PermanentUI.perm.scoreText.text = PermanentUI.perm.score.ToString();
+
+        GetStats();
 
         TrackIdleTime();
 
