@@ -10,6 +10,7 @@ public class PermanentUI : MonoBehaviour
     // Player stats
     public int cherries = 0;
     public TextMeshProUGUI cherryText;
+    public TextMeshProUGUI cherryLabel;
     public int health;
     public TextMeshProUGUI healthStat;
     public int score = 0;
@@ -19,6 +20,7 @@ public class PermanentUI : MonoBehaviour
     private bool isGameOver = false;
     [SerializeField] private Canvas gameOver;
     private CanvasGroup gameOverCanvasGroup;
+    private Color32 originalColor;
 
     private void Start()
     {
@@ -33,6 +35,17 @@ public class PermanentUI : MonoBehaviour
         {
             Destroy(gameObject);
         }
+
+        originalColor = cherryLabel.color;
+    }
+
+    public void Update()
+    {   
+        // Change label to red
+        if(cherries == 0)
+            cherryLabel.color = new Color32(255, 0, 0, 255);
+        else
+            cherryLabel.color = originalColor;
     }
 
     public void Reset()
