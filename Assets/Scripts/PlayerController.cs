@@ -225,9 +225,10 @@ public class PlayerController : MonoBehaviour
                 PermanentUI.perm.health -= 1;
 
             // Lose collected cherries
+            int prevCherryCount = PermanentUI.perm.cherries;
             PermanentUI.perm.cherries = 0;
             Vector3 playerPosition = transform.position;
-            cherryCollection.ScatterCherries(playerPosition);
+            cherryCollection.ScatterCherries(playerPosition, prevCherryCount);
 
         }
         

@@ -44,19 +44,23 @@ public class CherryCollection : MonoBehaviour
             cherry.transform.position = newPos;
 
             // Drop cherries to ground
-            if(dropCherries) 
+            if (dropCherries) 
                 cherry.ChangeCollider();
 
         }
     }
 
     // Instantiates several cherry game objects in a semicircle from the player's current position
-    public void ScatterCherries(Vector3 player_position)
+    public void ScatterCherries(Vector3 player_position, int prevCherryCount)
     {   
-
-        int numberOfCherries = 6;
         
-        for (int i = 0; i < numberOfCherries; i++)
+        int numberOfCherries = 6;
+        if (prevCherryCount < 6 && prevCherryCount > 0)
+        {
+            numberOfCherries = prevCherryCount; //limit cherries dropped
+        }
+        
+        for (int i = 1; i < numberOfCherries; i++)
         {
             // semicircle (180 degrees)
             float angle = i * Mathf.PI / (numberOfCherries - 1);
