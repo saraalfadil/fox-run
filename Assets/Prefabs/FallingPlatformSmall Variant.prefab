@@ -8,6 +8,14 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 6739131645477097609, guid: 7d89e5d28d5ea4945a5c3eefa5fca49e, type: 3}
+      propertyPath: m_Size.x
+      value: 2.949473
+      objectReference: {fileID: 0}
+    - target: {fileID: 6739131645477097609, guid: 7d89e5d28d5ea4945a5c3eefa5fca49e, type: 3}
+      propertyPath: m_Offset.x
+      value: 0.0061796308
+      objectReference: {fileID: 0}
+    - target: {fileID: 6739131645477097609, guid: 7d89e5d28d5ea4945a5c3eefa5fca49e, type: 3}
       propertyPath: m_SpriteTilingProperty.oldSize.x
       value: 2.9375
       objectReference: {fileID: 0}
