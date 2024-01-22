@@ -12,7 +12,7 @@ public class PlayerController : MonoBehaviour
     private AudioSource mainAudio;
     private AudioSource invincibleAudio;
     // FSM
-    private enum State { idle, running, jumping, falling, hurt, waiting };
+    private enum State { idle, running, jumping, falling, hurt, waiting, push };
     private State state = State.idle;
     private bool isInvincible = false;
     private bool hasMoved = true;
@@ -26,6 +26,7 @@ public class PlayerController : MonoBehaviour
 
     // Inspector variables
     [SerializeField] private LayerMask ground;
+    [SerializeField] private LayerMask rock;
     [SerializeField] private float speed = 5f;
     [SerializeField] private float jumpForce = 10f;
     [SerializeField] private float hurtForce = 10f;
@@ -297,6 +298,7 @@ public class PlayerController : MonoBehaviour
     
     private void AnimationState()
     {
+
         if(state == State.jumping) 
         {
             if(rb.velocity.y < .1f)
@@ -317,8 +319,21 @@ public class PlayerController : MonoBehaviour
         }
         else if(Mathf.Abs(rb.velocity.x) > 2f)
         {
-            // Moving
-            state = State.running;
+            if(coll.IsTouchingLayers(rock))
+            {
+                state = State.push;
+            }
+            else 
+            {
+                state = State.running;
+            }   
+        }
+        else if(state == State.push)
+        {
+            if(Mathf.Abs(rb.velocity.x) < 2f)
+            {
+                state = State.idle;
+            }
         }
         else if (!hasMoved) {
             state = State.waiting;
