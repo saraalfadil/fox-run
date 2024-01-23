@@ -18,7 +18,7 @@ GameObject:
   - component: {fileID: 2332603129619282515}
   m_Layer: 0
   m_Name: BoxPowerupInvincibility
-  m_TagString: BoxPowerup
+  m_TagString: BoxPowerupInvincibility
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

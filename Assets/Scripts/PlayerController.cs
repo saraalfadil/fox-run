@@ -15,6 +15,7 @@ public class PlayerController : MonoBehaviour
     private enum State { idle, running, jumping, falling, hurt, waiting, push };
     private State state = State.idle;
     private bool isInvincible = false;
+    private bool superSpeedEnabled = false;
     private bool hasMoved = true;
     private float idleTimer = 0f;
     private float idleDuration = 6f;
@@ -153,7 +154,7 @@ public class PlayerController : MonoBehaviour
 
         }
 
-        if(other.gameObject.tag == "BoxPowerup")
+        if(other.gameObject.tag == "BoxPowerupInvincibility")
         {   
             if(state == State.falling)
             {
@@ -162,12 +163,12 @@ public class PlayerController : MonoBehaviour
                 box.Collected();
                 Jump();
 
-                StartCoroutine(PowerupDelay());
+                StartCoroutine(StartInvinciblePowerup());
 
             }
         }
     
-        if(other.gameObject.tag == "BoxPowerupCherry")
+        if(other.gameObject.tag == "BoxPowerupCherries")
         {   
             if(state == State.falling)
             {
@@ -177,6 +178,19 @@ public class PlayerController : MonoBehaviour
                 Jump();
 
                 PermanentUI.perm.cherries += 10;
+            }
+        }
+
+        if(other.gameObject.tag == "BoxPowerupSneakers")
+        {   
+            if(state == State.falling)
+            {
+
+                BoxPowerup box = other.gameObject.GetComponent<BoxPowerup>();
+                box.Collected();
+                Jump();
+
+                StartCoroutine(StartSneakerPowerup());
             }
         }
 
@@ -385,7 +399,7 @@ public class PlayerController : MonoBehaviour
         isFlashing = false;
         
     }
-    private IEnumerator ResetInvinsiblePowerUp()
+    private IEnumerator ResetInvinciblePowerUp()
     {
         yield return new WaitForSeconds(20);
 
@@ -399,11 +413,11 @@ public class PlayerController : MonoBehaviour
         invincibleParticles.Stop();
     }
 
-    private IEnumerator PowerupDelay()
+    private IEnumerator StartInvinciblePowerup()
     {
         yield return new WaitForSeconds(.60f);
         // Limit powerup effect activation period
-        StartCoroutine(ResetInvinsiblePowerUp());
+        StartCoroutine(ResetInvinciblePowerUp());
         
         if(!isInvincible) 
         {   // Change main music
@@ -416,6 +430,24 @@ public class PlayerController : MonoBehaviour
         invincibleParticles.Play();
 
         isInvincible = true;
+    }
+
+    private IEnumerator StartSneakerPowerup()
+    {
+        if(!superSpeedEnabled) 
+        {  
+            superSpeedEnabled = true;
+            speed = 15f;
+            // Increase pitch of music
+            mainAudio.pitch = 1.5f;
+        }
+
+        yield return new WaitForSeconds(15f);
+
+        // Reset speed
+        superSpeedEnabled = false;
+        mainAudio.pitch = 1;
+        speed = 5f;
     }
 
 }

@@ -12,6 +12,7 @@ TagManager:
   - BoxPowerup
   - BoxPowerupCherry
   - Rock
+  - BoxPowerupSneakers
   layers:
   - Default
   - TransparentFX
