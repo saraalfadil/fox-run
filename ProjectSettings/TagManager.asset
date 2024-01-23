@@ -9,10 +9,10 @@ TagManager:
   - Powerup
   - Bounce
   - Spikes
-  - BoxPowerup
-  - BoxPowerupCherry
   - Rock
   - BoxPowerupSneakers
+  - BoxPowerupInvincibility
+  - BoxPowerupCherries
   layers:
   - Default
   - TransparentFX
