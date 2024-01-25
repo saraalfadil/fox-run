@@ -37,6 +37,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private AudioSource spikesSound;
     [SerializeField] private AudioSource powerupSound;
     [SerializeField] private CherryCollection cherryCollection;
+    [SerializeField] private GameObject shield;
 
     private void Start() {
         rb = GetComponent<Rigidbody2D>();
@@ -194,6 +195,19 @@ public class PlayerController : MonoBehaviour
             }
         }
 
+        if(other.gameObject.tag == "BoxPowerupShield")
+        {   
+            if(state == State.falling)
+            {
+
+                BoxPowerup box = other.gameObject.GetComponent<BoxPowerup>();
+                box.Collected();
+                Jump();
+
+                shield.SetActive(true);
+            }
+        }
+
         if(other.gameObject.tag == "Bounce")
         {
 
@@ -235,15 +249,23 @@ public class PlayerController : MonoBehaviour
             preventDamage = true;
             state = State.hurt;
 
-            // If player doesn't have any cherries, decrease health
-            if(PermanentUI.perm.cherries < 1)
-                PermanentUI.perm.health -= 1;
+            // If shield isactive
+            if(shield.activeSelf) {
 
-            // Lose collected cherries
-            int prevCherryCount = PermanentUI.perm.cherries;
-            PermanentUI.perm.cherries = 0;
-            Vector3 playerPosition = transform.position;
-            cherryCollection.ScatterCherries(playerPosition, prevCherryCount);
+                shield.SetActive(false);
+                
+            } else {
+                // If player doesn't have any cherries, decrease health
+                if(PermanentUI.perm.cherries < 1)
+                    PermanentUI.perm.health -= 1;
+
+                // Lose collected cherries
+                int prevCherryCount = PermanentUI.perm.cherries;
+                PermanentUI.perm.cherries = 0;
+                Vector3 playerPosition = transform.position;
+                cherryCollection.ScatterCherries(playerPosition, prevCherryCount);
+            }
+
 
         }
         
