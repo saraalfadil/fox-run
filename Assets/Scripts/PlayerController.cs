@@ -2,35 +2,30 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum PlayerState { idle, running, jumping, falling, hurt, waiting, push };
+
 public class PlayerController : MonoBehaviour
 {
-    private Rigidbody2D rb;
+    public Rigidbody2D rb;
     private Animator anim;
-    private CircleCollider2D coll;
+    public CircleCollider2D coll;
     private ParticleSystem invincibleParticles;
     protected SpriteRenderer sprite;
     private AudioSource mainAudio;
     private AudioSource invincibleAudio;
     // FSM
-    private enum State { idle, running, jumping, falling, hurt, waiting, push };
-    private State state = State.idle;
+    public PlayerState state = PlayerState.idle;
     private bool isInvincible = false;
     private bool superSpeedEnabled = false;
-    private bool hasMoved = true;
-    private float idleTimer = 0f;
-    private float idleDuration = 6f;
     private bool preventDamage = false;
     private float preventDamageTimer = 0f;
     private float preventDamageDuration = 3f;
-    public bool isJumping { get { return state == State.jumping; } }
     private bool isFlashing = false;
 
     // Inspector variables
-    [SerializeField] private LayerMask ground;
+    [SerializeField] public LayerMask ground;
     [SerializeField] private LayerMask rock;
-    [SerializeField] private float speed = 5f;
-    [SerializeField] private float jumpForce = 10f;
-    [SerializeField] private float hurtForce = 10f;
+    [SerializeField] public float hurtForce = 10f;
     [SerializeField] private int defeatEnemyScore = 100;
     [SerializeField] private AudioSource footstep;
     [SerializeField] private AudioSource bounceSound;
@@ -38,12 +33,15 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private AudioSource powerupSound;
     [SerializeField] private CherryCollection cherryCollection;
     [SerializeField] private GameObject shield;
-
-    private void Start() {
+    [SerializeField] private PlayerMovement movementScript;
+    private void Awake() {
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
         coll = GetComponent<CircleCollider2D>(); 
         sprite = GetComponent<SpriteRenderer>();
+    }
+
+    private void Start() {
         cherryCollection = GetComponent<CherryCollection>();
 
         AudioSource[] allAudios = Camera.main.gameObject.GetComponents<AudioSource>();
@@ -61,29 +59,12 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        if(state != State.hurt) 
-        {
-            Movement();
-        }
         AnimationState();
         anim.SetInteger("state", (int)state); // set animation based on Enumerator state
 
         GetStats();
 
-        TrackIdleTime();
-
         TrackTemporaryInvincibility();
-
-    }
-
-    private void TrackIdleTime() {
-
-        // Keep track of elapsed time for idle animation
-        idleTimer += Time.deltaTime;
-        if (idleTimer >= idleDuration) {
-            idleTimer = 0f;
-            hasMoved = false;
-        }
 
     }
 
@@ -113,7 +94,7 @@ public class PlayerController : MonoBehaviour
                 spikesSound.Play();
 
                 // Jump up a tiny bit
-                Jump(5f);
+                movementScript.Jump(5f);
 
                 // Player is hurt
                 DecreaseHealth();
@@ -129,10 +110,10 @@ public class PlayerController : MonoBehaviour
             Enemy enemy = other.gameObject.GetComponent<Enemy>();
 
             // If player is jumping on top of enemy, the enemy is defeated
-            if(state == State.falling)
+            if(state == PlayerState.falling)
             {
                 enemy.JumpedOn();
-                Jump();
+                movementScript.Jump();
                 IncreaseScore();
             }
             else 
@@ -147,7 +128,7 @@ public class PlayerController : MonoBehaviour
                 {   
                     // Player gets hurt
                     DecreaseHealth();
-                    KnockPlayerBack(enemy);
+                    movementScript.KnockPlayerBack(enemy);
                     
                 }
             }
@@ -157,12 +138,12 @@ public class PlayerController : MonoBehaviour
 
         if(other.gameObject.tag == "BoxPowerupInvincibility")
         {   
-            if(state == State.falling)
+            if(state == PlayerState.falling)
             {
 
                 BoxPowerup box = other.gameObject.GetComponent<BoxPowerup>();
                 box.Collected();
-                Jump();
+                movementScript.Jump();
 
                 StartCoroutine(StartInvinciblePowerup());
 
@@ -171,12 +152,12 @@ public class PlayerController : MonoBehaviour
     
         if(other.gameObject.tag == "BoxPowerupCherries")
         {   
-            if(state == State.falling)
+            if(state == PlayerState.falling)
             {
 
                 BoxPowerup box = other.gameObject.GetComponent<BoxPowerup>();
                 box.Collected();
-                Jump();
+                movementScript.Jump();
 
                 PermanentUI.perm.cherries += 10;
             }
@@ -184,12 +165,12 @@ public class PlayerController : MonoBehaviour
 
         if(other.gameObject.tag == "BoxPowerupSneakers")
         {   
-            if(state == State.falling)
+            if(state == PlayerState.falling)
             {
 
                 BoxPowerup box = other.gameObject.GetComponent<BoxPowerup>();
                 box.Collected();
-                Jump();
+                movementScript.Jump();
 
                 StartCoroutine(StartSneakerPowerup());
             }
@@ -197,12 +178,12 @@ public class PlayerController : MonoBehaviour
 
         if(other.gameObject.tag == "BoxPowerupShield")
         {   
-            if(state == State.falling)
+            if(state == PlayerState.falling)
             {
 
                 BoxPowerup box = other.gameObject.GetComponent<BoxPowerup>();
                 box.Collected();
-                Jump();
+                movementScript.Jump();
 
                 shield.SetActive(true);
             }
@@ -215,7 +196,7 @@ public class PlayerController : MonoBehaviour
             bounceSound.Play();
 
             // Super jump
-            Jump(45f);
+            movementScript.Jump(45f);
         
         }
 
@@ -247,11 +228,13 @@ public class PlayerController : MonoBehaviour
         else 
         {   
             preventDamage = true;
-            state = State.hurt;
+            state = PlayerState.hurt;
 
-            // If shield isactive
+            // If shield is enabled
+            // player doesn't take any damage
             if(shield.activeSelf) {
 
+                // Disable shield
                 shield.SetActive(false);
                 
             } else {
@@ -271,62 +254,6 @@ public class PlayerController : MonoBehaviour
         
     }
 
-    private void KnockPlayerBack(Enemy enemy)
-    {
-        // Enemy is to my right
-        if(enemy.transform.position.x > transform.position.x)
-        {
-            // I should be damaged and move left
-            rb.velocity = new Vector2(-hurtForce, 5);
-        }
-        else // Enemy is to my left 
-        {
-            // I should be damaged and move right
-            rb.velocity = new Vector2(hurtForce, 5);
-        }
-    }
-
-    private void Movement()
-    {
-        float hDirection = Input.GetAxis("Horizontal");
-         
-        // Moving left
-        if(hDirection < 0)
-        {
-            rb.velocity = new Vector2(-speed, rb.velocity.y);
-            transform.localScale = new Vector2(-1, 1);
-            HasMoved();
-        } 
-        // Moving right
-        else if(hDirection > 0)
-        {
-            rb.velocity = new Vector2(speed, rb.velocity.y);
-            transform.localScale = new Vector2(1, 1);
-            HasMoved();
-        } 
-
-        // Jumping
-        if(Input.GetButtonDown("Jump") && coll.IsTouchingLayers(ground))
-        {   
-            Jump();
-        } 
-        
-    }
-
-    private void HasMoved()
-    {
-        hasMoved = true;
-        idleTimer = 0f; // reset timer
-    }
-
-    public void Jump(float force = 0f) 
-    {   
-        force = force != 0f ? force : jumpForce;
-        rb.velocity = new Vector2(rb.velocity.x, force);
-        state = State.jumping;
-        HasMoved();
-    }
-
     private void PlayFootstep() 
     {
         footstep.Play();
@@ -335,21 +262,21 @@ public class PlayerController : MonoBehaviour
     private void AnimationState()
     {
 
-        if(state == State.jumping) 
+        if(state == PlayerState.jumping) 
         {
             if(rb.velocity.y < .1f)
             {
-                state = State.falling;
+                state = PlayerState.falling;
             }
         }
-        else if(state == State.falling)
+        else if(state == PlayerState.falling)
         {
             if(coll.IsTouchingLayers(ground))
             {
-                state = State.idle;
+                state = PlayerState.idle;
             }
         }
-        else if(state == State.hurt)
+        else if(state == PlayerState.hurt)
         {
             StartCoroutine(ResumeIdleAfterHurt());
         }
@@ -357,26 +284,26 @@ public class PlayerController : MonoBehaviour
         {
             if(coll.IsTouchingLayers(rock))
             {
-                state = State.push;
+                state = PlayerState.push;
             }
             else 
             {
-                state = State.running;
+                state = PlayerState.running;
             }   
         }
-        else if(state == State.push)
+        else if(state == PlayerState.push)
         {
             if(Mathf.Abs(rb.velocity.x) < 2f)
             {
-                state = State.idle;
+                state = PlayerState.idle;
             }
         }
-        else if (!hasMoved) {
-            state = State.waiting;
+        else if (!movementScript.hasMoved) {
+            state = PlayerState.waiting;
         }
         else
         {
-            state = State.idle;
+            state = PlayerState.idle;
         }
     }
 
@@ -386,7 +313,7 @@ public class PlayerController : MonoBehaviour
         yield return new WaitForSeconds(.5f);
         if(Mathf.Abs(rb.velocity.x) < .1f)
         {
-            state = State.idle;
+            state = PlayerState.idle;
         }     
     }
 
@@ -459,7 +386,7 @@ public class PlayerController : MonoBehaviour
         if(!superSpeedEnabled) 
         {  
             superSpeedEnabled = true;
-            speed = 15f;
+            movementScript.speed = 15f;
             // Increase pitch of music
             mainAudio.pitch = 1.5f;
         }
@@ -469,7 +396,7 @@ public class PlayerController : MonoBehaviour
         // Reset speed
         superSpeedEnabled = false;
         mainAudio.pitch = 1;
-        speed = 5f;
+        movementScript.speed = 5f;
     }
 
 }

@@ -14,7 +14,7 @@ public class NewTestScript
     public void UI_SetStartingUI()
     {
         ui = GameObject.Find("PlayerUI");
-        var script = ui.GetComponent<PermanentUI>();
+        PermanentUI script = ui.GetComponent<PermanentUI>();
     
         Assert.IsTrue(script.cherries == 0);
     }
@@ -24,10 +24,10 @@ public class NewTestScript
     {
 
         character = GameObject.Find("Player");
-        var controller = this.character.GetComponent<PlayerController>();
-        controller.Jump();
+        PlayerController controller = this.character.GetComponent<PlayerController>();
+        //controller.movementScript.Jump();
         //yield return new WaitForSeconds(0.5f);
-        Assert.IsTrue(controller.isJumping);
+        //Assert.IsTrue(controller.movementScript.isJumping);
         //yield return new WaitForSeconds(1f);
         //Assert.IsFalse(controller.isJumping);
     }

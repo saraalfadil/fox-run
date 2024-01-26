@@ -4992,6 +4992,7 @@ GameObject:
   - component: {fileID: 3780258492542464042}
   - component: {fileID: 3780258492542464041}
   - component: {fileID: 3780258492542464038}
+  - component: {fileID: 4532315792777785192}
   - component: {fileID: 4004270331573669593}
   - component: {fileID: 3780258492542464037}
   - component: {fileID: 3780258492542464039}
@@ -5104,6 +5105,20 @@ MonoBehaviour:
   powerupSound: {fileID: 2104206293}
   cherryCollection: {fileID: 4004270331573669593}
   shield: {fileID: 135910508}
+  movementScript: {fileID: 4532315792777785192}
+--- !u!114 &4532315792777785192
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3780258492542464040}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7b2143bc9014d140bc79c110b010705, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerController: {fileID: 3780258492542464038}
 --- !u!114 &4004270331573669593
 MonoBehaviour:
   m_ObjectHideFlags: 0
