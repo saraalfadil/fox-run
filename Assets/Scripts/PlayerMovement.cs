@@ -5,13 +5,13 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
     [SerializeField] PlayerController playerController;
-
+    [SerializeField] public float speed = 5f;
+    [SerializeField] public float jumpForce = 20f;
+    
     public bool hasMoved = true;
     private float idleTimer = 0f;
     private float idleDuration = 6f;
     public bool isJumping { get { return playerController.state == PlayerState.jumping; } }
-    [SerializeField] public float speed = 5f;
-    [SerializeField] public float jumpForce = 20f;
 
     void Update()
     {
@@ -21,19 +21,13 @@ public class PlayerMovement : MonoBehaviour
 
         float hDirection = Input.GetAxis("Horizontal");
          
-        // Moving left
         if(hDirection < 0)
         {
-            playerController.rb.velocity = new Vector2(-speed, playerController.rb.velocity.y);
-            transform.localScale = new Vector2(-1, 1);
-            HasMoved();
+            MovePlayerLeft();
         } 
-        // Moving right
         else if(hDirection > 0)
         {
-            playerController.rb.velocity = new Vector2(speed, playerController.rb.velocity.y);
-            transform.localScale = new Vector2(1, 1);
-            HasMoved();
+            MovePlayerRight();
         } 
 
         // Jumping
@@ -50,6 +44,20 @@ public class PlayerMovement : MonoBehaviour
         force = force != 0f ? force : jumpForce;
         playerController.rb.velocity = new Vector2(playerController.rb.velocity.x, force);
         playerController.state = PlayerState.jumping;
+        HasMoved();
+    }
+
+    private void MovePlayerLeft() 
+    {
+        playerController.rb.velocity = new Vector2(-speed, playerController.rb.velocity.y);
+        transform.localScale = new Vector2(-1, 1);
+        HasMoved();
+    }
+
+    private void MovePlayerRight()
+    {
+        playerController.rb.velocity = new Vector2(speed, playerController.rb.velocity.y);
+        transform.localScale = new Vector2(1, 1);
         HasMoved();
     }
 
