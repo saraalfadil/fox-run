@@ -5,9 +5,8 @@ using UnityEngine;
 public class Bunny : Enemy
 {
     private Collider2D coll;
-
-    [SerializeField] private float leftCap;
-    [SerializeField] private float rightCap;
+    [SerializeField] private Transform leftCap;
+    [SerializeField] private Transform rightCap;
     [SerializeField] private float jumpLength = 10f;
     [SerializeField] private float jumpHeight = 15f;
     [SerializeField] private LayerMask ground;
@@ -26,7 +25,7 @@ public class Bunny : Enemy
         {
 
             // Check if we are past the right cap
-            if(transform.localPosition.x < rightCap)
+            if(transform.position.x < rightCap.position.x)
             {
                 // Check if sprite is facing right 
                 if(transform.localScale.x != 1)
@@ -51,7 +50,7 @@ public class Bunny : Enemy
         {
 
             // Check if we are past the left cap
-            if(transform.localPosition.x > leftCap)
+            if(transform.position.x > leftCap.position.x)
             {
 
                 // Check if sprite is facing left 

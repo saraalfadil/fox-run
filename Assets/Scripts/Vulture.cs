@@ -5,9 +5,8 @@ using UnityEngine;
 public class Vulture : Enemy
 {
     private Collider2D coll;
-
-    [SerializeField] private float leftCap;
-    [SerializeField] private float rightCap;
+    [SerializeField] private Transform leftCap;
+    [SerializeField] private Transform rightCap;
     [SerializeField] private float jumpLength = 2f;
     [SerializeField] private LayerMask ground;
     private bool facingLeft = true;
@@ -24,7 +23,7 @@ public class Vulture : Enemy
         {
 
             // Check if we are past the left cap
-            if(transform.localPosition.x > leftCap)
+            if(transform.position.x > leftCap.position.x)
             {
                 // Check if sprite is facing left
                 if(transform.localScale.x != -1)
@@ -44,7 +43,7 @@ public class Vulture : Enemy
         {
             
             // Check if we are past the right cap
-            if(transform.localPosition.x < rightCap)
+            if(transform.position.x < rightCap.position.x)
             {
                 // Check if sprite is facing left
                 if(transform.localScale.x != 1)
