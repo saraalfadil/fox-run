@@ -27,7 +27,7 @@ public class Cherry : MonoBehaviour
     {
         anim.SetTrigger("collected");
         cherrySound.Play();
-        PermanentUI.perm.cherries += 1;
+        //PermanentUI.perm.cherries += 1;
     }
 
     private void Disappear()

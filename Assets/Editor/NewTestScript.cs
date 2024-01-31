@@ -16,7 +16,7 @@ public class NewTestScript
         ui = GameObject.Find("PlayerUI");
         PermanentUI script = ui.GetComponent<PermanentUI>();
     
-        Assert.IsTrue(script.cherries == 0);
+        Assert.IsTrue(script.gems == 0);
     }
 
     [Test]

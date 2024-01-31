@@ -31,7 +31,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private AudioSource bounceSound;
     [SerializeField] private AudioSource spikesSound;
     [SerializeField] private AudioSource powerupSound;
-    [SerializeField] private CherryCollection cherryCollection;
+    [SerializeField] private GemCollection gemCollection;
     [SerializeField] private GameObject shield;
     [SerializeField] private PlayerMovement movementScript;
     private void Awake() {
@@ -42,7 +42,7 @@ public class PlayerController : MonoBehaviour
     }
 
     private void Start() {
-        cherryCollection = GetComponent<CherryCollection>();
+        gemCollection = GetComponent<GemCollection>();
 
         AudioSource[] allAudios = Camera.main.gameObject.GetComponents<AudioSource>();
         mainAudio = allAudios[0];
@@ -53,7 +53,7 @@ public class PlayerController : MonoBehaviour
     private void GetStats()
     {
         PermanentUI.perm.healthStat.text = PermanentUI.perm.health.ToString();
-        PermanentUI.perm.cherryText.text = PermanentUI.perm.cherries.ToString();
+        PermanentUI.perm.gemText.text = PermanentUI.perm.gems.ToString();
         PermanentUI.perm.scoreText.text = PermanentUI.perm.score.ToString();
     }
 
@@ -81,10 +81,10 @@ public class PlayerController : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if(collision.tag == "Collectable")
+        if(collision.tag == "Gem")
         {
-            Cherry cherry = collision.gameObject.GetComponent<Cherry>();
-            cherry.Collected();
+            Gem gem = collision.gameObject.GetComponent<Gem>();
+            gem.Collected();
         }
         if(collision.tag == "Spikes")
         {   
@@ -159,7 +159,7 @@ public class PlayerController : MonoBehaviour
                 box.Collected();
                 movementScript.Jump();
 
-                PermanentUI.perm.cherries += 10;
+                PermanentUI.perm.gems += 10;
             }
         }
 
@@ -200,10 +200,10 @@ public class PlayerController : MonoBehaviour
         
         }
 
-        if(other.gameObject.tag == "Collectable" && !preventDamage)
+        if(other.gameObject.tag == "Gem" && !preventDamage)
         {
-            Cherry cherry = other.gameObject.GetComponent<Cherry>();
-            cherry.Collected();
+            Gem gem = other.gameObject.GetComponent<Gem>();
+            gem.Collected();
         }
     }
 
@@ -238,15 +238,15 @@ public class PlayerController : MonoBehaviour
                 shield.SetActive(false);
                 
             } else {
-                // If player doesn't have any cherries, decrease health
-                if(PermanentUI.perm.cherries < 1)
+                // If player doesn't have any gems, decrease health
+                if(PermanentUI.perm.gems < 1)
                     PermanentUI.perm.health -= 1;
 
-                // Lose collected cherries
-                int prevCherryCount = PermanentUI.perm.cherries;
-                PermanentUI.perm.cherries = 0;
+                // Lose collected gems
+                int prevGemCount = PermanentUI.perm.gems;
+                PermanentUI.perm.gems = 0;
                 Vector3 playerPosition = transform.position;
-                cherryCollection.ScatterCherries(playerPosition, prevCherryCount);
+                gemCollection.ScatterGems(playerPosition, prevGemCount);
             }
 
 

@@ -8,9 +8,9 @@ using UnityEngine.SceneManagement;
 public class PermanentUI : MonoBehaviour
 {
     // Player stats
-    public int cherries = 0;
-    public TextMeshProUGUI cherryText;
-    public TextMeshProUGUI cherryLabel;
+    public int gems = 0;
+    public TextMeshProUGUI gemText;
+    public TextMeshProUGUI gemLabel;
     public int health;
     public TextMeshProUGUI healthStat;
     public int score = 0;
@@ -36,22 +36,22 @@ public class PermanentUI : MonoBehaviour
             Destroy(gameObject);
         }
 
-        originalColor = cherryLabel.color;
+        originalColor = gemLabel.color;
     }
 
     public void Update()
     {   
         // Change label to red
-        if(cherries == 0)
-            cherryLabel.color = new Color32(255, 0, 0, 255);
+        if(gems == 0)
+            gemLabel.color = new Color32(255, 0, 0, 255);
         else
-            cherryLabel.color = originalColor;
+            gemLabel.color = originalColor;
     }
 
     public void Reset()
     {
         health = 5;
-        cherries = 0;
+        gems = 0;
         score = 0;
     }
 
@@ -93,7 +93,7 @@ public class PermanentUI : MonoBehaviour
         // Reset scene
         SceneManager.LoadScene("Menu");
 
-        // Score, health, cherries
+        // Score, health, gems
         Reset();
     }
     
