@@ -11,6 +11,10 @@ PrefabInstance:
       propertyPath: m_SpriteTilingProperty.oldSize.x
       value: 3.875
       objectReference: {fileID: 0}
+    - target: {fileID: 5938583119963478737, guid: ea1ced1a92ea58b49b08b0e31fcf6934, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: 06a5253f50feb224a81ea3e40cfc4865, type: 2}
     - target: {fileID: 5938583119963478741, guid: ea1ced1a92ea58b49b08b0e31fcf6934, type: 3}
       propertyPath: m_Name
       value: BoxPowerupInvincibility

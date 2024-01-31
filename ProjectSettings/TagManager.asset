@@ -15,6 +15,7 @@ TagManager:
   - BoxPowerupShield
   - Gem
   - BoxPowerup
+  - BoxPowerupGems
   layers:
   - Default
   - TransparentFX

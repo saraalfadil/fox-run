@@ -19,6 +19,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: BoxPowerupGem
       objectReference: {fileID: 0}
+    - target: {fileID: 5938583119963478741, guid: ea1ced1a92ea58b49b08b0e31fcf6934, type: 3}
+      propertyPath: m_TagString
+      value: BoxPowerupGems
+      objectReference: {fileID: 0}
     - target: {fileID: 5938583119963478748, guid: ea1ced1a92ea58b49b08b0e31fcf6934, type: 3}
       propertyPath: m_RootOrder
       value: 0

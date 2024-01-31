@@ -150,7 +150,7 @@ public class PlayerController : MonoBehaviour
             }
         }
     
-        if(other.gameObject.tag == "BoxPowerupCherries")
+        if(other.gameObject.tag == "BoxPowerupGems")
         {   
             if(state == PlayerState.falling)
             {
