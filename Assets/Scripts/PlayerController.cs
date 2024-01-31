@@ -189,6 +189,19 @@ public class PlayerController : MonoBehaviour
             }
         }
 
+        if(other.gameObject.tag == "BoxPowerupLife")
+        {   
+            if(state == PlayerState.falling)
+            {
+
+                BoxPowerup box = other.gameObject.GetComponent<BoxPowerup>();
+                box.Collected();
+                movementScript.Jump();
+
+                PermanentUI.perm.health += 1;
+            }
+        }
+
         if(other.gameObject.tag == "Bounce")
         {
 
