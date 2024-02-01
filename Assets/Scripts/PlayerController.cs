@@ -256,10 +256,7 @@ public class PlayerController : MonoBehaviour
                     PermanentUI.perm.health -= 1;
 
                 // Lose collected gems
-                int prevGemCount = PermanentUI.perm.gems;
-                PermanentUI.perm.gems = 0;
-                Vector3 playerPosition = transform.position;
-                gemCollection.ScatterGems(playerPosition, prevGemCount);
+                gemCollection.LoseGems();
             }
 
 

@@ -6,15 +6,31 @@ using TMPro;
 
 public class GemCollection : MonoBehaviour 
 {
-
+    [SerializeField] private GameObject gem;
     private bool dropGems = false;
     private float gemTimer = 0f;
-    private float gemDuration = 1f;
-    [SerializeField] private GameObject collectable;
-    private List<GameObject> collectables = new List<GameObject>();
+    private float gemDuration = 1f;    
+    private int spawnCount = 6;  
+    private int collectedGems = 0;
+    private List<GameObject> gems = new List<GameObject>();
+
+    private void Start()
+    {
+        // Limit gems spawned
+        collectedGems = PermanentUI.perm.gems;
+        if (collectedGems < spawnCount && collectedGems > 0)
+            spawnCount = collectedGems;
+
+    }
 
     private void Update() {
 
+        ScatterGems();
+
+    }
+
+    public void ScatterGems() 
+    {
         // Keep track of when gems are suspended
         gemTimer += Time.deltaTime;
         if (gemTimer >= gemDuration) {
@@ -22,56 +38,61 @@ public class GemCollection : MonoBehaviour
             dropGems = true;
         }
 
+        // Continously scatter gems outward from player each frame, them drop at the same time
         float radiusIncreaseRate = 0.5f;
-        for (int i = collectables.Count - 1; i >= 0; i--)
+        for (int i = gems.Count - 1; i >= 0; i--)
         {     
 
-            if (collectables[i] == null || collectables[i].GetComponent<Gem>() == null)
+            // Remove destroyed gems from gem collection
+            if (gems[i] == null || gems[i].GetComponent<Gem>() == null)
             {
-                collectables.RemoveAt(i);
+                gems.RemoveAt(i);
                 continue;
             }
 
             // Increase the radius of the circle gradually
-            float angle = i * Mathf.PI * 2 / collectables.Count;
+            float angle = i * Mathf.PI * 2 / gems.Count;
             float x = Mathf.Cos(angle) * (.01f + radiusIncreaseRate * Time.deltaTime);
             float y = Mathf.Sin(angle) * (.01f + radiusIncreaseRate * Time.deltaTime);
 
-            Gem gem = collectables[i].GetComponent<Gem>();
-
-            // Continuously update position
+            // Continuously update each gem position 
+            Gem gem = gems[i].GetComponent<Gem>();
             Vector3 newPos = gem.transform.position + new Vector3(x, y, 0);
             gem.transform.position = newPos;
 
             // Drop gems to ground
             if (dropGems) 
                 gem.ChangeCollider();
-
+            
         }
+
+    }
+
+    public void LoseGems()
+    {
+        // Spawn gems
+        SpawnGems();
+
+        // Reset gems to 0 
+        PermanentUI.perm.gems = 0;
     }
 
     // Instantiates several gem game objects in a semicircle from the player's current position
-    public void ScatterGems(Vector3 player_position, int prevGemCount)
+    public void SpawnGems()
     {   
-        
-        int numberOfGems = 6;
-        if (prevGemCount < 6 && prevGemCount > 0)
-        {
-            numberOfGems = prevGemCount; //limit gems dropped
-        }
-        
-        for (int i = 1; i < numberOfGems; i++)
+        Vector3 playerPosition = transform.position;
+
+        // Spawn gems in a semicircle
+        for (int i = 1; i < spawnCount; i++)
         {
             // semicircle (180 degrees)
-            float angle = i * Mathf.PI / (numberOfGems - 1);
-            
             float radius = 2.5f;
+            float angle = i * Mathf.PI / (spawnCount - 1);
             float x = Mathf.Cos(angle) * radius;
             float y = Mathf.Sin(angle) * radius;
             
-            Vector3 pos = player_position + new Vector3(x, y, 0);
-
-            collectables.Add((GameObject)Instantiate(collectable, pos, Quaternion.identity));
+            Vector3 pos = playerPosition + new Vector3(x, y, 0);
+            gems.Add((GameObject)Instantiate(gem, pos, Quaternion.identity));
         }  
 
     }
