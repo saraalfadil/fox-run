@@ -10,18 +10,8 @@ public class GemCollection : MonoBehaviour
     private bool dropGems = false;
     private float gemTimer = 0f;
     private float gemDuration = 1f;    
-    private int spawnCount = 6;  
-    private int collectedGems = 0;
+    private int defaultSpawnCount = 6;  
     private List<GameObject> gems = new List<GameObject>();
-
-    private void Start()
-    {
-        // Limit gems spawned
-        collectedGems = PermanentUI.perm.gems;
-        if (collectedGems < spawnCount && collectedGems > 0)
-            spawnCount = collectedGems;
-
-    }
 
     private void Update() {
 
@@ -68,19 +58,18 @@ public class GemCollection : MonoBehaviour
 
     }
 
-    public void LoseGems()
+    public void LoseGems(int collectedGems)
     {
         // Spawn gems
-        SpawnGems();
-
-        // Reset gems to 0 
-        PermanentUI.perm.gems = 0;
+        SpawnGems(collectedGems);
     }
 
     // Instantiates several gem game objects in a semicircle from the player's current position
-    public void SpawnGems()
+    public void SpawnGems(int collectedGems)
     {   
         Vector3 playerPosition = transform.position;
+
+        int spawnCount = collectedGems < defaultSpawnCount && collectedGems > 0 ? collectedGems : defaultSpawnCount;
 
         // Spawn gems in a semicircle
         for (int i = 1; i < spawnCount; i++)

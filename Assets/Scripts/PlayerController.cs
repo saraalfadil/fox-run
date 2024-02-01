@@ -103,36 +103,38 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-   private void OnCollisionEnter2D(Collision2D other)
+    private void DefeatEnemy(Enemy enemy)
+    {
+        // jump up
+        if(state == PlayerState.falling)    
+            movementScript.Jump();
+
+        IncreaseScore();
+
+        // the enemy is defeated
+        enemy.JumpedOn();
+
+    }
+
+    private void OnCollisionEnter2D(Collision2D other)
     {
         if(other.gameObject.tag == "Enemy")
         {
             Enemy enemy = other.gameObject.GetComponent<Enemy>();
 
-            // If player is jumping on top of enemy, the enemy is defeated
-            if(state == PlayerState.falling)
-            {
-                enemy.JumpedOn();
-                movementScript.Jump();
-                IncreaseScore();
+            // If player is jumping on top of enemy, or if player is invincible
+            if(isInvincible || state == PlayerState.falling)
+            {   
+                DefeatEnemy(enemy);
             }
             else 
             {   
-                // If player is invincible, the enemy is defeated
-                if (isInvincible)
-                {
-                    enemy.JumpedOn();
-                    IncreaseScore();
-                }
-                else 
-                {   
-                    // Player gets hurt
-                    DecreaseHealth();
-                    movementScript.KnockPlayerBack(enemy);
-                    
-                }
+                 
+                // Player gets hurt
+                DecreaseHealth();
+                movementScript.KnockPlayerBack(enemy);
+                
             }
-
 
         }
 
@@ -240,28 +242,41 @@ public class PlayerController : MonoBehaviour
         } 
         else 
         {   
-            preventDamage = true;
-            state = PlayerState.hurt;
 
-            // If shield is enabled
-            // player doesn't take any damage
-            if(shield.activeSelf) {
-
-                // Disable shield
-                shield.SetActive(false);
-                
-            } else {
-                // If player doesn't have any gems, decrease health
-                if(PermanentUI.perm.gems < 1)
-                    PermanentUI.perm.health -= 1;
-
-                // Lose collected gems
-                gemCollection.LoseGems();
-            }
-
+            TakeDamage();
 
         }
         
+    }
+
+    private void TakeDamage() {
+
+        if(preventDamage)
+            return;
+        
+        preventDamage = true;
+        state = PlayerState.hurt;
+
+        // If shield is enabled
+        // player doesn't take any damage
+        if(shield.activeSelf) {
+
+            // Disable shield
+            shield.SetActive(false);
+            
+        } else {
+            // If player doesn't have any gems, decrease health
+            if(PermanentUI.perm.gems < 1)
+                PermanentUI.perm.health -= 1;
+
+            // Lose collected gems
+            int collectedGems = PermanentUI.perm.gems;
+            gemCollection.LoseGems(collectedGems);
+
+            // Reset gems to 0 
+            PermanentUI.perm.gems = 0;
+        }
+
     }
 
     private void PlayFootstep() 

@@ -48,15 +48,6 @@ public class PermanentUI : MonoBehaviour
         else
             gemLabel.color = originalColor;
 
-        GetStats();
-
-    }
-
-    private void GetStats()
-    {
-        healthStat.text = health.ToString();
-        gemText.text = gems.ToString();
-        scoreText.text = score.ToString();
     }
 
     public void Reset()
