@@ -21,6 +21,7 @@ public class PermanentUI : MonoBehaviour
     [SerializeField] private Canvas gameOver;
     private CanvasGroup gameOverCanvasGroup;
     private Color32 originalColor;
+    public bool endLevel;
 
     private void Start()
     {
@@ -46,6 +47,16 @@ public class PermanentUI : MonoBehaviour
             gemLabel.color = new Color32(255, 0, 0, 255);
         else
             gemLabel.color = originalColor;
+
+        GetStats();
+
+    }
+
+    private void GetStats()
+    {
+        healthStat.text = health.ToString();
+        gemText.text = gems.ToString();
+        scoreText.text = score.ToString();
     }
 
     public void Reset()

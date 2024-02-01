@@ -7,7 +7,6 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] PlayerController playerController;
     [SerializeField] public float speed = 5f;
     [SerializeField] public float jumpForce = 20f;
-    
     public bool hasMoved = true;
     private float idleTimer = 0f;
     private float idleDuration = 6f;
@@ -16,7 +15,7 @@ public class PlayerMovement : MonoBehaviour
     void Update()
     {
 
-        if(playerController.state == PlayerState.hurt) 
+        if(playerController.state == PlayerState.hurt || PermanentUI.perm.endLevel) 
             return;
 
         float hDirection = Input.GetAxis("Horizontal");
