@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum PlayerState { idle, running, jumping, falling, hurt, waiting, push };
+public enum PlayerState { idle, running, jumping, falling, hurt, waiting, push, crouching };
 
 public class PlayerController : MonoBehaviour
 {
@@ -325,6 +325,9 @@ public class PlayerController : MonoBehaviour
         }
         else if (!movementScript.hasMoved) {
             state = PlayerState.waiting;
+        }
+        else if (state == PlayerState.crouching) {
+            state = PlayerState.crouching;
         }
         else
         {

@@ -19,6 +19,7 @@ public class PlayerMovement : MonoBehaviour
             return;
 
         float hDirection = Input.GetAxis("Horizontal");
+        float virection = Input.GetAxis("Vertical");
          
         if(hDirection < 0)
         {
@@ -28,6 +29,12 @@ public class PlayerMovement : MonoBehaviour
         {
             MovePlayerRight();
         } 
+
+        Debug.Log("virection: " + virection);
+        
+        if(virection < 0) {
+            MovePlayerDown();
+        }
 
         // Jumping
         if(Input.GetButtonDown("Jump") && playerController.coll.IsTouchingLayers(playerController.ground))
@@ -57,6 +64,14 @@ public class PlayerMovement : MonoBehaviour
     {
         playerController.rb.velocity = new Vector2(speed, playerController.rb.velocity.y);
         transform.localScale = new Vector2(1, 1);
+        HasMoved();
+    }
+
+    private void MovePlayerDown() 
+    {
+        //playerController.rb.velocity = new Vector2(playerController.rb.velocity.x, -speed);
+        //transform.localScale = new Vector2(-1, 1);
+        playerController.state = PlayerState.crouching;
         HasMoved();
     }
 
