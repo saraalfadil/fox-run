@@ -23,5 +23,8 @@ public class MainMenu : MonoBehaviour
     public void LoadNextLevel() 
     {
         SceneManager.LoadScene("Level2");
+
+        PermanentUI.perm.Reset();
+        PermanentUI.perm.endLevel = false;
     }
 }
