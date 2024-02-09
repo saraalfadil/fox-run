@@ -4993,6 +4993,7 @@ GameObject:
   - component: {fileID: 3780258492542464041}
   - component: {fileID: 3780258492542464038}
   - component: {fileID: 4532315792777785192}
+  - component: {fileID: 6436413816275432322}
   - component: {fileID: 4004270331573669593}
   - component: {fileID: 3780258492542464037}
   - component: {fileID: 3780258492542464039}
@@ -5089,23 +5090,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 54d12b42dc5fc1f46985279e83260e3a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  rb: {fileID: 0}
+  coll: {fileID: 0}
+  sprite: {fileID: 0}
+  state: 0
   ground:
     serializedVersion: 2
     m_Bits: 64
   rock:
     serializedVersion: 2
     m_Bits: 128
-  speed: 7
-  jumpForce: 25
   hurtForce: 15
   defeatEnemyScore: 100
   footstep: {fileID: 6382624372019793589}
   bounceSound: {fileID: 2104206292}
   spikesSound: {fileID: 2104206291}
   powerupSound: {fileID: 2104206293}
-  cherryCollection: {fileID: 4004270331573669593}
   shield: {fileID: 135910508}
   movementScript: {fileID: 4532315792777785192}
+  damageScript: {fileID: 6436413816275432322}
 --- !u!114 &4532315792777785192
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5119,6 +5122,25 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerController: {fileID: 3780258492542464038}
+  speed: 5
+  jumpForce: 20
+  hasMoved: 1
+--- !u!114 &6436413816275432322
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3780258492542464040}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7acdf4686ecc2324188ada2ea8702144, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerController: {fileID: 3780258492542464038}
+  preventDamage: 0
+  gemCollection: {fileID: 4004270331573669593}
+  shield: {fileID: 135910508}
 --- !u!114 &4004270331573669593
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5131,7 +5153,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b3ce312f2ea389747942ee86a595d39d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  collectable: {fileID: 3217274290086377496, guid: bdfbd771054c6b14f8948fc8884e1a07, type: 3}
+  gem: {fileID: 0}
 --- !u!50 &3780258492542464037
 Rigidbody2D:
   serializedVersion: 4

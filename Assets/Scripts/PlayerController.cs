@@ -10,17 +10,13 @@ public class PlayerController : MonoBehaviour
     private Animator anim;
     public CircleCollider2D coll;
     private ParticleSystem invincibleParticles;
-    protected SpriteRenderer sprite;
+    public SpriteRenderer sprite;
     private AudioSource mainAudio;
     private AudioSource invincibleAudio;
     // FSM
     public PlayerState state = PlayerState.idle;
     private bool isInvincible = false;
     private bool superSpeedEnabled = false;
-    private bool preventDamage = false;
-    private float preventDamageTimer = 0f;
-    private float preventDamageDuration = 3f;
-    private bool isFlashing = false;
 
     // Inspector variables
     [SerializeField] public LayerMask ground;
@@ -31,18 +27,17 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private AudioSource bounceSound;
     [SerializeField] private AudioSource spikesSound;
     [SerializeField] private AudioSource powerupSound;
-    [SerializeField] private GemCollection gemCollection;
     [SerializeField] private GameObject shield;
     [SerializeField] private PlayerMovement movementScript;
+    [SerializeField] private PlayerDamage damageScript;
     private void Awake() {
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
-        coll = GetComponent<CircleCollider2D>(); 
+        coll = GetComponent<CircleCollider2D>();
         sprite = GetComponent<SpriteRenderer>();
     }
 
     private void Start() {
-        gemCollection = GetComponent<GemCollection>();
 
         AudioSource[] allAudios = Camera.main.gameObject.GetComponents<AudioSource>();
         mainAudio = allAudios[0];
@@ -64,19 +59,6 @@ public class PlayerController : MonoBehaviour
 
         GetStats();
 
-        TrackTemporaryInvincibility();
-
-    }
-
-    private void TrackTemporaryInvincibility() {
-
-        // Keep track of temporary invincibility
-        preventDamageTimer += Time.deltaTime;
-        if (preventDamageTimer >= preventDamageDuration) {
-            preventDamageTimer = 0f;
-            preventDamage = false;
-        }
-
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -87,7 +69,7 @@ public class PlayerController : MonoBehaviour
             gem.Collected();
         }
         if(collision.tag == "Spikes")
-        {   
+        {
 
             if (!isInvincible) {
                 // Play feedback sound
@@ -97,7 +79,7 @@ public class PlayerController : MonoBehaviour
                 movementScript.Jump(5f);
 
                 // Player is hurt
-                DecreaseHealth();
+                damageScript.DecreaseHealth();
             }
 
         }
@@ -106,7 +88,7 @@ public class PlayerController : MonoBehaviour
     private void DefeatEnemy(Enemy enemy)
     {
         // jump up
-        if(state == PlayerState.falling)    
+        if(state == PlayerState.falling)
             movementScript.Jump();
 
         IncreaseScore();
@@ -124,22 +106,22 @@ public class PlayerController : MonoBehaviour
 
             // If player is jumping on top of enemy, or if player is invincible
             if(isInvincible || state == PlayerState.falling)
-            {   
+            {
                 DefeatEnemy(enemy);
             }
-            else 
-            {   
-                 
+            else
+            {
+
                 // Player gets hurt
-                DecreaseHealth();
+                damageScript.DecreaseHealth();
                 movementScript.KnockPlayerBack(enemy);
-                
+
             }
 
         }
 
         if(other.gameObject.tag == "BoxPowerupInvincibility")
-        {   
+        {
             if(state == PlayerState.falling)
             {
 
@@ -151,9 +133,9 @@ public class PlayerController : MonoBehaviour
 
             }
         }
-    
+
         if(other.gameObject.tag == "BoxPowerupGems")
-        {   
+        {
             if(state == PlayerState.falling)
             {
 
@@ -166,7 +148,7 @@ public class PlayerController : MonoBehaviour
         }
 
         if(other.gameObject.tag == "BoxPowerupSneakers")
-        {   
+        {
             if(state == PlayerState.falling)
             {
 
@@ -179,7 +161,7 @@ public class PlayerController : MonoBehaviour
         }
 
         if(other.gameObject.tag == "BoxPowerupShield")
-        {   
+        {
             if(state == PlayerState.falling)
             {
 
@@ -192,7 +174,7 @@ public class PlayerController : MonoBehaviour
         }
 
         if(other.gameObject.tag == "BoxPowerupLife")
-        {   
+        {
             if(state == PlayerState.falling)
             {
 
@@ -212,10 +194,10 @@ public class PlayerController : MonoBehaviour
 
             // Super jump
             movementScript.Jump(45f);
-        
+
         }
 
-        if(other.gameObject.tag == "Gem" && !preventDamage)
+        if(other.gameObject.tag == "Gem" && !damageScript.preventDamage)
         {
             Gem gem = other.gameObject.GetComponent<Gem>();
             gem.Collected();
@@ -227,67 +209,15 @@ public class PlayerController : MonoBehaviour
         PermanentUI.perm.score += defeatEnemyScore;
     }
 
-    private void DecreaseHealth()
-    {
-
-        // Player is temporarily protected from taking damage
-        if(preventDamage)
-            return;
-        
-        PermanentUI.perm.healthStat.text = PermanentUI.perm.health.ToString();
-        if(PermanentUI.perm.health <= 0)
-        {   
-            // Show game over
-            PermanentUI.perm.GameOver();
-        } 
-        else 
-        {   
-
-            TakeDamage();
-
-        }
-        
-    }
-
-    private void TakeDamage() {
-
-        if(preventDamage)
-            return;
-        
-        preventDamage = true;
-        state = PlayerState.hurt;
-
-        // If shield is enabled
-        // player doesn't take any damage
-        if(shield.activeSelf) {
-
-            // Disable shield
-            shield.SetActive(false);
-            
-        } else {
-            // If player doesn't have any gems, decrease health
-            if(PermanentUI.perm.gems < 1)
-                PermanentUI.perm.health -= 1;
-
-            // Lose collected gems
-            int collectedGems = PermanentUI.perm.gems;
-            gemCollection.LoseGems(collectedGems);
-
-            // Reset gems to 0 
-            PermanentUI.perm.gems = 0;
-        }
-
-    }
-
-    private void PlayFootstep() 
+    private void PlayFootstep()
     {
         footstep.Play();
     }
-    
+
     private void AnimationState()
     {
 
-        if(state == PlayerState.jumping) 
+        if(state == PlayerState.jumping)
         {
             if(rb.velocity.y < .1f)
             {
@@ -303,7 +233,7 @@ public class PlayerController : MonoBehaviour
         }
         else if(state == PlayerState.hurt)
         {
-            StartCoroutine(ResumeIdleAfterHurt());
+            StartCoroutine(damageScript.ResumeIdleAfterHurt());
         }
         else if(Mathf.Abs(rb.velocity.x) > 2f)
         {
@@ -311,10 +241,10 @@ public class PlayerController : MonoBehaviour
             {
                 state = PlayerState.push;
             }
-            else 
+            else
             {
                 state = PlayerState.running;
-            }   
+            }
         }
         else if(state == PlayerState.push)
         {
@@ -335,47 +265,6 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private IEnumerator ResumeIdleAfterHurt()
-    {
-        StartPlayerFlashAnimation();
-        yield return new WaitForSeconds(.5f);
-        if(Mathf.Abs(rb.velocity.x) < .1f)
-        {
-            state = PlayerState.idle;
-        }     
-    }
-
-    public void StartPlayerFlashAnimation()
-    {
-        if (!isFlashing)
-        {
-            StartCoroutine(PlayerFlash());
-        }
-    }
-
-    private IEnumerator PlayerFlash()
-    {
-        isFlashing = true;
-
-        float elapsedTime = 0f;
-        float flashDuration = 3f;
-        float flashSpeed = 5.0f;
-        Color originalColor = sprite.color;
-
-        while (elapsedTime < flashDuration)
-        {
-            float newColor = Mathf.PingPong(elapsedTime * flashSpeed, 1f);
-            Color flashColor = new Color(originalColor.r, originalColor.g, originalColor.b, newColor);
-            sprite.color = flashColor;
-
-            elapsedTime += Time.deltaTime;
-            yield return null;
-        }
-
-        sprite.color = originalColor;
-        isFlashing = false;
-        
-    }
     private IEnumerator ResetInvinciblePowerUp()
     {
         yield return new WaitForSeconds(20);
@@ -385,7 +274,7 @@ public class PlayerController : MonoBehaviour
         /// Change main music back
         invincibleAudio.Stop(); // stop invincible power up audio
         mainAudio.Play(); // play main audio again
-        
+
         // Stop invincible power up particle effect
         invincibleParticles.Stop();
     }
@@ -395,14 +284,14 @@ public class PlayerController : MonoBehaviour
         yield return new WaitForSeconds(.60f);
         // Limit powerup effect activation period
         StartCoroutine(ResetInvinciblePowerUp());
-        
-        if(!isInvincible) 
+
+        if(!isInvincible)
         {   // Change main music
             mainAudio.Stop(); // stop main audio
             invincibleAudio.Play(); // play invincible power up audio
         }
 
-        // Display particle system 
+        // Display particle system
         invincibleParticles = GetComponentInChildren<ParticleSystem>();
         invincibleParticles.Play();
 
@@ -411,8 +300,8 @@ public class PlayerController : MonoBehaviour
 
     private IEnumerator StartSneakerPowerup()
     {
-        if(!superSpeedEnabled) 
-        {  
+        if(!superSpeedEnabled)
+        {
             superSpeedEnabled = true;
             movementScript.speed = 15f;
             // Increase pitch of music

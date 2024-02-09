@@ -15,45 +15,43 @@ public class PlayerMovement : MonoBehaviour
     void Update()
     {
 
-        if(playerController.state == PlayerState.hurt || PermanentUI.perm.endLevel) 
+        if(playerController.state == PlayerState.hurt || PermanentUI.perm.endLevel)
             return;
 
         float hDirection = Input.GetAxis("Horizontal");
         float virection = Input.GetAxis("Vertical");
-         
+
         if(hDirection < 0)
         {
             MovePlayerLeft();
-        } 
+        }
         else if(hDirection > 0)
         {
             MovePlayerRight();
-        } 
+        }
 
-        Debug.Log("virection: " + virection);
-        
         if(virection < 0) {
             MovePlayerDown();
         }
 
         // Jumping
         if(Input.GetButtonDown("Jump") && playerController.coll.IsTouchingLayers(playerController.ground))
-        {   
+        {
             Jump();
-        } 
+        }
 
         TrackIdleTime();
     }
 
-    public void Jump(float force = 0f) 
-    {   
+    public void Jump(float force = 0f)
+    {
         force = force != 0f ? force : jumpForce;
         playerController.rb.velocity = new Vector2(playerController.rb.velocity.x, force);
         playerController.state = PlayerState.jumping;
         HasMoved();
     }
 
-    private void MovePlayerLeft() 
+    private void MovePlayerLeft()
     {
         playerController.rb.velocity = new Vector2(-speed, playerController.rb.velocity.y);
         transform.localScale = new Vector2(-1, 1);
@@ -67,7 +65,7 @@ public class PlayerMovement : MonoBehaviour
         HasMoved();
     }
 
-    private void MovePlayerDown() 
+    private void MovePlayerDown()
     {
         //playerController.rb.velocity = new Vector2(playerController.rb.velocity.x, -speed);
         //transform.localScale = new Vector2(-1, 1);
@@ -80,7 +78,7 @@ public class PlayerMovement : MonoBehaviour
         hasMoved = true;
         idleTimer = 0f; // reset timer
     }
-    
+
     private void TrackIdleTime() {
 
         // Keep track of elapsed time for idle animation
@@ -100,7 +98,7 @@ public class PlayerMovement : MonoBehaviour
             // I should be damaged and move left
             playerController.rb.velocity = new Vector2(-playerController.hurtForce, 5);
         }
-        else // Enemy is to my left 
+        else // Enemy is to my left
         {
             // I should be damaged and move right
             playerController.rb.velocity = new Vector2(playerController.hurtForce, 5);
