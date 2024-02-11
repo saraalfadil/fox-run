@@ -14,7 +14,7 @@ public class PlayerDamage : MonoBehaviour
 
     private void Update()
     {
-      TrackTemporaryInvincibility();
+        TrackTemporaryInvincibility();
     }
 
     private void Start()
@@ -50,13 +50,13 @@ public class PlayerDamage : MonoBehaviour
         else
         {
 
-            TakeDamage();
+            HandleTakeDamage();
 
         }
 
     }
 
-    private void TakeDamage()
+    private void HandleTakeDamage()
     {
 
         if(preventDamage)
@@ -73,17 +73,25 @@ public class PlayerDamage : MonoBehaviour
             shield.SetActive(false);
 
         } else {
-            // If player doesn't have any gems, decrease health
-            if(PermanentUI.perm.gems < 1)
-                PermanentUI.perm.health -= 1;
 
-            // Lose collected gems
-            int collectedGems = PermanentUI.perm.gems;
-            gemCollection.LoseGems(collectedGems);
+           TakeDamage();
 
-            // Reset gems to 0
-            PermanentUI.perm.gems = 0;
         }
+
+    }
+
+    private void TakeDamage() {
+
+         // If player doesn't have any gems, decrease health
+        if(PermanentUI.perm.gems < 1)
+            PermanentUI.perm.health -= 1;
+
+        // Lose collected gems
+        int collectedGems = PermanentUI.perm.gems;
+        gemCollection.LoseGems(collectedGems);
+
+        // Reset gems to 0
+        PermanentUI.perm.gems = 0;
 
     }
 
