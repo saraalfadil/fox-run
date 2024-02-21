@@ -19,7 +19,7 @@ public class Gem : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         sprite = GetComponent<SpriteRenderer>();
 
-        if (temporary) 
+        if (temporary)
             StartCoroutine(SelfDestruct());
     }
 
@@ -32,7 +32,7 @@ public class Gem : MonoBehaviour
 
     private void Disappear()
     {
-        Destroy(this.gameObject);
+        Destroy(gameObject);
     }
 
     public void ChangeCollider()
@@ -42,12 +42,12 @@ public class Gem : MonoBehaviour
     }
 
     private IEnumerator SelfDestruct()
-    {       
+    {
         yield return new WaitForSeconds(3f);
         FadeOut();
         Disappear();
     }
-    private void FadeOut() 
+    private void FadeOut()
     {
         float startAlpha = sprite.color.a;
         float targetAlpha = 0f;

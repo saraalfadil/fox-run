@@ -65,23 +65,45 @@ public class PlayerController : MonoBehaviour
     {
         if(collision.tag == "Gem")
         {
-            Gem gem = collision.gameObject.GetComponent<Gem>();
-            gem.Collected();
+            CollectGem(collision.gameObject);
         }
         if(collision.tag == "Spikes")
         {
+            HandleSpikesCollison();
+        }
+    }
 
-            if (!isInvincible) {
-                // Play feedback sound
-                spikesSound.Play();
+    private void CollectGem(GameObject gemObject)
+    {
+        if (gemObject != null)
+        {
+            Gem gem = gemObject.GetComponent<Gem>();
+            gem.Collected();
+        }
+    }
 
-                // Jump up a tiny bit
-                movementScript.Jump(5f);
+    private void CollectPowerup(GameObject powerupObject)
+    {
+        if (powerupObject != null)
+        {
+            BoxPowerup box = powerupObject.GetComponent<BoxPowerup>();
+            box.Collected();
+            movementScript.Jump();
+        }
 
-                // Player is hurt
-                damageScript.DecreaseHealth();
-            }
+    }
 
+    private void HandleSpikesCollison()
+    {
+        if (!isInvincible) {
+            // Play feedback sound
+            spikesSound.Play();
+
+            // Jump up a tiny bit
+            movementScript.Jump(5f);
+
+            // Player is hurt
+            damageScript.DecreaseHealth();
         }
     }
 
@@ -102,22 +124,7 @@ public class PlayerController : MonoBehaviour
     {
         if(other.gameObject.tag == "Enemy")
         {
-            Enemy enemy = other.gameObject.GetComponent<Enemy>();
-
-            // If player is jumping on top of enemy, or if player is invincible
-            if(isInvincible || state == PlayerState.falling)
-            {
-                DefeatEnemy(enemy);
-            }
-            else
-            {
-
-                // Player gets hurt
-                damageScript.DecreaseHealth();
-                movementScript.KnockPlayerBack(enemy);
-
-            }
-
+            HandleEnemyCollision(other.gameObject);
         }
 
         if(other.gameObject.tag == "BoxPowerupInvincibility")
@@ -125,9 +132,7 @@ public class PlayerController : MonoBehaviour
             if(state == PlayerState.falling)
             {
 
-                BoxPowerup box = other.gameObject.GetComponent<BoxPowerup>();
-                box.Collected();
-                movementScript.Jump();
+                CollectPowerup(other.gameObject);
 
                 StartCoroutine(StartInvinciblePowerup());
 
@@ -139,9 +144,7 @@ public class PlayerController : MonoBehaviour
             if(state == PlayerState.falling)
             {
 
-                BoxPowerup box = other.gameObject.GetComponent<BoxPowerup>();
-                box.Collected();
-                movementScript.Jump();
+                CollectPowerup(other.gameObject);
 
                 PermanentUI.perm.gems += 10;
             }
@@ -152,9 +155,7 @@ public class PlayerController : MonoBehaviour
             if(state == PlayerState.falling)
             {
 
-                BoxPowerup box = other.gameObject.GetComponent<BoxPowerup>();
-                box.Collected();
-                movementScript.Jump();
+                CollectPowerup(other.gameObject);
 
                 StartCoroutine(StartSneakerPowerup());
             }
@@ -165,9 +166,7 @@ public class PlayerController : MonoBehaviour
             if(state == PlayerState.falling)
             {
 
-                BoxPowerup box = other.gameObject.GetComponent<BoxPowerup>();
-                box.Collected();
-                movementScript.Jump();
+                CollectPowerup(other.gameObject);
 
                 shield.SetActive(true);
             }
@@ -178,9 +177,7 @@ public class PlayerController : MonoBehaviour
             if(state == PlayerState.falling)
             {
 
-                BoxPowerup box = other.gameObject.GetComponent<BoxPowerup>();
-                box.Collected();
-                movementScript.Jump();
+                CollectPowerup(other.gameObject);
 
                 PermanentUI.perm.health += 1;
             }
@@ -188,19 +185,38 @@ public class PlayerController : MonoBehaviour
 
         if(other.gameObject.tag == "Bounce")
         {
-
-            // Play feedback sound
-            bounceSound.Play();
-
-            // Super jump
-            movementScript.Jump(45f);
-
+            HandleBounce();
         }
 
         if(other.gameObject.tag == "Gem" && !damageScript.preventDamage)
         {
-            Gem gem = other.gameObject.GetComponent<Gem>();
-            gem.Collected();
+            CollectGem(other.gameObject);
+        }
+    }
+
+    private void HandleBounce()
+    {
+        // Play feedback sound
+        bounceSound.Play();
+
+        // Super jump
+        movementScript.Jump(45f);
+    }
+
+    private void HandleEnemyCollision(GameObject enemyObject)
+    {
+        Enemy enemy = enemyObject.GetComponent<Enemy>();
+
+        // If player is jumping on top of enemy, or if player is invincible
+        if(isInvincible || state == PlayerState.falling)
+        {
+            DefeatEnemy(enemy);
+        }
+        else
+        {
+            // Player gets hurt
+            damageScript.DecreaseHealth();
+            movementScript.KnockPlayerBack(enemy);
         }
     }
 
