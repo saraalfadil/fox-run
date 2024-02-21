@@ -7,25 +7,24 @@ public class MovingPlatform : MonoBehaviour
     [SerializeField] private float speed;
     [SerializeField] private int startingPoint;
     [SerializeField] private Transform[] points;
-
     private int i;
 
-    void Start()
+    private void Start()
     {
         transform.position = points[startingPoint].position;
     }
 
-    void Update()
+    private void Update()
     {
         // check the distance of the platform and the point
-        if(Vector2.Distance(transform.position, points[i].position) < 0.02f)
+        if (Vector2.Distance(transform.position, points[i].position) < 0.02f)
         {
             i++;
 
             // check if the platform was on the last point after the index increase
             if(i == points.Length)
             {
-                i = 0; 
+                i = 0;
             }
         }
 

@@ -32,7 +32,7 @@ public class PermanentUI : MonoBehaviour
         {
             perm = this;
         }
-        else 
+        else
         {
             Destroy(gameObject);
         }
@@ -41,9 +41,9 @@ public class PermanentUI : MonoBehaviour
     }
 
     public void Update()
-    {   
+    {
         // Change label to red
-        if(gems == 0)
+        if (gems == 0)
             gemLabel.color = new Color32(255, 0, 0, 255);
         else
             gemLabel.color = originalColor;
@@ -58,7 +58,7 @@ public class PermanentUI : MonoBehaviour
     }
 
     public void GameOver()
-    {   
+    {
         if (isGameOver)
             return;
 
@@ -66,7 +66,7 @@ public class PermanentUI : MonoBehaviour
 
         // stop main audio
         AudioSource[] allAudios = Camera.main.gameObject.GetComponents<AudioSource>();
-        allAudios[0].Stop(); 
+        allAudios[0].Stop();
 
         // Play game over audio
         AudioSource gameOverAudio = gameOver.GetComponent<AudioSource>();
@@ -98,5 +98,5 @@ public class PermanentUI : MonoBehaviour
         // Score, health, gems
         Reset();
     }
-    
+
 }

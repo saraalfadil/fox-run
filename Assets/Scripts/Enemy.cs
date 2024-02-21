@@ -20,20 +20,20 @@ public class Enemy : MonoBehaviour
     }
 
     public void JumpedOn()
-    {   
+    {
 
         score = Instantiate(damageText, transform.position, transform.rotation);
 
         anim.SetTrigger("explode");
         explodeSound.Play();
-        if(rb) 
+        if (rb)
         {
             rb.velocity = Vector2.zero;
             rb.bodyType = RigidbodyType2D.Kinematic;
         }
 
         GetComponent<Collider2D>().enabled = false;
-        
+
     }
 
     private void Death()

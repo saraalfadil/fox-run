@@ -12,21 +12,20 @@ public class EndLevel : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if(collision.tag == "Player")
+        if (collision.tag == "Player")
         {
             //SceneManager.LoadScene(sceneToLoad);
 
             ShowEndLevel();
 
-            
         }
     }
 
-    private void ShowEndLevel() 
+    private void ShowEndLevel()
     {
         // stop main audio
         AudioSource[] allAudios = Camera.main.gameObject.GetComponents<AudioSource>();
-        allAudios[0].Stop(); 
+        allAudios[0].Stop();
 
         // Play end level audio
         AudioSource endLevelAudio = endLevel.GetComponent<AudioSource>();
@@ -43,7 +42,7 @@ public class EndLevel : MonoBehaviour
     private IEnumerator StopInput()
     {
         yield return new WaitForSeconds(.8f);
-        
+
         PermanentUI.perm.endLevel = true;
     }
 

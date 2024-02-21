@@ -4,11 +4,11 @@ using UnityEngine;
 
 public class PlayerDamage : MonoBehaviour
 {
-    [SerializeField] PlayerController playerController;
     public bool preventDamage = false;
     private float preventDamageTimer = 0f;
     private float preventDamageDuration = 3f;
     private bool isFlashing = false;
+    [SerializeField] PlayerController playerController;
     [SerializeField] private GemCollection gemCollection;
     [SerializeField] private GameObject shield;
 
@@ -27,7 +27,8 @@ public class PlayerDamage : MonoBehaviour
 
         // Keep track of temporary invincibility
         preventDamageTimer += Time.deltaTime;
-        if (preventDamageTimer >= preventDamageDuration) {
+        if (preventDamageTimer >= preventDamageDuration)
+        {
             preventDamageTimer = 0f;
             preventDamage = false;
         }
@@ -38,20 +39,18 @@ public class PlayerDamage : MonoBehaviour
     {
 
         // Player is temporarily protected from taking damage
-        if(preventDamage)
+        if (preventDamage)
             return;
 
         PermanentUI.perm.healthStat.text = PermanentUI.perm.health.ToString();
-        if(PermanentUI.perm.health <= 0)
+        if (PermanentUI.perm.health <= 0)
         {
             // Show game over
             PermanentUI.perm.GameOver();
         }
         else
         {
-
             HandleTakeDamage();
-
         }
 
     }
@@ -67,23 +66,23 @@ public class PlayerDamage : MonoBehaviour
 
         // If shield is enabled
         // player doesn't take any damage
-        if(shield.activeSelf) {
-
-            // Disable shield
-            shield.SetActive(false);
-
-        } else {
-
-           TakeDamage();
-
+        if (shield.activeSelf)
+        {
+        	// Disable shield
+        	shield.SetActive(false);
+        }
+		else
+        {
+        	TakeDamage();
         }
 
     }
 
-    private void TakeDamage() {
+    private void TakeDamage()
+	{
 
-         // If player doesn't have any gems, decrease health
-        if(PermanentUI.perm.gems < 1)
+        // If player doesn't have any gems, decrease health
+        if (PermanentUI.perm.gems < 1)
             PermanentUI.perm.health -= 1;
 
         // Lose collected gems
@@ -99,7 +98,7 @@ public class PlayerDamage : MonoBehaviour
     {
         StartPlayerFlashAnimation();
         yield return new WaitForSeconds(.5f);
-        if(Mathf.Abs(playerController.rb.velocity.x) < .1f)
+        if (Mathf.Abs(playerController.rb.velocity.x) < .1f)
         {
             playerController.state = PlayerState.idle;
         }

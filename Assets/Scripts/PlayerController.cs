@@ -16,6 +16,7 @@ public class PlayerController : MonoBehaviour
     // FSM
     public PlayerState state = PlayerState.idle;
     private bool isInvincible = false;
+    private bool isFalling = false;
     private bool superSpeedEnabled = false;
 
     // Inspector variables
@@ -30,14 +31,16 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private GameObject shield;
     [SerializeField] private PlayerMovement movementScript;
     [SerializeField] private PlayerDamage damageScript;
-    private void Awake() {
+    private void Awake()
+    {
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
         coll = GetComponent<CircleCollider2D>();
         sprite = GetComponent<SpriteRenderer>();
     }
 
-    private void Start() {
+    private void Start()
+    {
 
         AudioSource[] allAudios = Camera.main.gameObject.GetComponents<AudioSource>();
         mainAudio = allAudios[0];
@@ -55,10 +58,65 @@ public class PlayerController : MonoBehaviour
     private void Update()
     {
         AnimationState();
-        anim.SetInteger("state", (int)state); // set animation based on Enumerator state
 
         GetStats();
+    }
 
+    private void AnimationState()
+    {
+
+        anim.SetInteger("state", (int)state); // set animation based on Enumerator state
+
+        if (state == PlayerState.jumping)
+        {
+            if (rb.velocity.y < .1f)
+            {
+                state = PlayerState.falling;
+                isFalling = true;
+            }
+        }
+        else if (state == PlayerState.falling)
+        {
+            if (coll.IsTouchingLayers(ground))
+            {
+                state = PlayerState.idle;
+                isFalling = false;
+            }
+        }
+        else if (state == PlayerState.hurt)
+        {
+            StartCoroutine(damageScript.ResumeIdleAfterHurt());
+        }
+        else if (Mathf.Abs(rb.velocity.x) > 2f)
+        {
+            if (coll.IsTouchingLayers(rock))
+            {
+                state = PlayerState.push;
+            }
+            else
+            {
+                state = PlayerState.running;
+            }
+        }
+        else if (state == PlayerState.push)
+        {
+            if (Mathf.Abs(rb.velocity.x) < 2f)
+            {
+                state = PlayerState.idle;
+            }
+        }
+        else if (!movementScript.hasMoved)
+        {
+            state = PlayerState.waiting;
+        }
+        else if (state == PlayerState.crouching)
+        {
+            state = PlayerState.crouching;
+        }
+        else
+        {
+            state = PlayerState.idle;
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -72,6 +130,75 @@ public class PlayerController : MonoBehaviour
             HandleSpikesCollison();
         }
     }
+
+    private void OnCollisionEnter2D(Collision2D other)
+    {
+        if (other.gameObject.tag == "Enemy")
+        {
+            HandleEnemyCollision(other.gameObject);
+        }
+
+        if (other.gameObject.tag == "BoxPowerupInvincibility")
+        {
+            if (isFalling)
+            {
+                CollectPowerup(other.gameObject);
+
+                StartCoroutine(StartInvinciblePowerup());
+            }
+        }
+
+        if (other.gameObject.tag == "BoxPowerupGems")
+        {
+            if (isFalling)
+            {
+                CollectPowerup(other.gameObject);
+
+                PermanentUI.perm.gems += 10;
+            }
+        }
+
+        if (other.gameObject.tag == "BoxPowerupSneakers")
+        {
+            if (isFalling)
+            {
+                CollectPowerup(other.gameObject);
+
+                StartSneakerPowerup();
+            }
+        }
+
+        if (other.gameObject.tag == "BoxPowerupShield")
+        {
+            if (isFalling)
+            {
+                CollectPowerup(other.gameObject);
+
+                shield.SetActive(true);
+            }
+        }
+
+        if (other.gameObject.tag == "BoxPowerupLife")
+        {
+            if (isFalling)
+            {
+                CollectPowerup(other.gameObject);
+
+                PermanentUI.perm.health += 1;
+            }
+        }
+
+        if (other.gameObject.tag == "Bounce")
+        {
+            HandleBounce();
+        }
+
+        if (other.gameObject.tag == "Gem" && !damageScript.preventDamage)
+        {
+            CollectGem(other.gameObject);
+        }
+    }
+
 
     private void CollectGem(GameObject gemObject)
     {
@@ -107,93 +234,6 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void DefeatEnemy(Enemy enemy)
-    {
-        // jump up
-        if(state == PlayerState.falling)
-            movementScript.Jump();
-
-        IncreaseScore();
-
-        // the enemy is defeated
-        enemy.JumpedOn();
-
-    }
-
-    private void OnCollisionEnter2D(Collision2D other)
-    {
-        if(other.gameObject.tag == "Enemy")
-        {
-            HandleEnemyCollision(other.gameObject);
-        }
-
-        if(other.gameObject.tag == "BoxPowerupInvincibility")
-        {
-            if(state == PlayerState.falling)
-            {
-
-                CollectPowerup(other.gameObject);
-
-                StartCoroutine(StartInvinciblePowerup());
-
-            }
-        }
-
-        if(other.gameObject.tag == "BoxPowerupGems")
-        {
-            if(state == PlayerState.falling)
-            {
-
-                CollectPowerup(other.gameObject);
-
-                PermanentUI.perm.gems += 10;
-            }
-        }
-
-        if(other.gameObject.tag == "BoxPowerupSneakers")
-        {
-            if(state == PlayerState.falling)
-            {
-
-                CollectPowerup(other.gameObject);
-
-                StartCoroutine(StartSneakerPowerup());
-            }
-        }
-
-        if(other.gameObject.tag == "BoxPowerupShield")
-        {
-            if(state == PlayerState.falling)
-            {
-
-                CollectPowerup(other.gameObject);
-
-                shield.SetActive(true);
-            }
-        }
-
-        if(other.gameObject.tag == "BoxPowerupLife")
-        {
-            if(state == PlayerState.falling)
-            {
-
-                CollectPowerup(other.gameObject);
-
-                PermanentUI.perm.health += 1;
-            }
-        }
-
-        if(other.gameObject.tag == "Bounce")
-        {
-            HandleBounce();
-        }
-
-        if(other.gameObject.tag == "Gem" && !damageScript.preventDamage)
-        {
-            CollectGem(other.gameObject);
-        }
-    }
-
     private void HandleBounce()
     {
         // Play feedback sound
@@ -205,19 +245,36 @@ public class PlayerController : MonoBehaviour
 
     private void HandleEnemyCollision(GameObject enemyObject)
     {
-        Enemy enemy = enemyObject.GetComponent<Enemy>();
-
-        // If player is jumping on top of enemy, or if player is invincible
-        if(isInvincible || state == PlayerState.falling)
+        if (isInvincible || isFalling)
         {
-            DefeatEnemy(enemy);
+            DefeatEnemy(enemyObject);
         }
         else
         {
-            // Player gets hurt
-            damageScript.DecreaseHealth();
-            movementScript.KnockPlayerBack(enemy);
+            PlayerHurt(enemyObject);
         }
+    }
+
+    private void PlayerHurt(GameObject enemyObject)
+    {
+        // Player gets hurt
+        damageScript.DecreaseHealth();
+        movementScript.KnockPlayerBack(enemyObject);
+    }
+
+    private void DefeatEnemy(GameObject enemyObject)
+    {
+        Enemy enemy = enemyObject.GetComponent<Enemy>();
+
+        // jump up
+        if (isFalling)
+            movementScript.Jump();
+
+        IncreaseScore();
+
+        // the enemy is defeated
+        enemy.JumpedOn();
+
     }
 
     private void IncreaseScore()
@@ -228,57 +285,6 @@ public class PlayerController : MonoBehaviour
     private void PlayFootstep()
     {
         footstep.Play();
-    }
-
-    private void AnimationState()
-    {
-
-        if(state == PlayerState.jumping)
-        {
-            if(rb.velocity.y < .1f)
-            {
-                state = PlayerState.falling;
-            }
-        }
-        else if(state == PlayerState.falling)
-        {
-            if(coll.IsTouchingLayers(ground))
-            {
-                state = PlayerState.idle;
-            }
-        }
-        else if(state == PlayerState.hurt)
-        {
-            StartCoroutine(damageScript.ResumeIdleAfterHurt());
-        }
-        else if(Mathf.Abs(rb.velocity.x) > 2f)
-        {
-            if(coll.IsTouchingLayers(rock))
-            {
-                state = PlayerState.push;
-            }
-            else
-            {
-                state = PlayerState.running;
-            }
-        }
-        else if(state == PlayerState.push)
-        {
-            if(Mathf.Abs(rb.velocity.x) < 2f)
-            {
-                state = PlayerState.idle;
-            }
-        }
-        else if (!movementScript.hasMoved) {
-            state = PlayerState.waiting;
-        }
-        else if (state == PlayerState.crouching) {
-            state = PlayerState.crouching;
-        }
-        else
-        {
-            state = PlayerState.idle;
-        }
     }
 
     private IEnumerator ResetInvinciblePowerUp()
@@ -301,29 +307,35 @@ public class PlayerController : MonoBehaviour
         // Limit powerup effect activation period
         StartCoroutine(ResetInvinciblePowerUp());
 
-        if(!isInvincible)
+        if (!isInvincible)
         {   // Change main music
             mainAudio.Stop(); // stop main audio
             invincibleAudio.Play(); // play invincible power up audio
+
+            // Display particle system
+            invincibleParticles = GetComponentInChildren<ParticleSystem>();
+            invincibleParticles.Play();
+
+            isInvincible = true;
         }
 
-        // Display particle system
-        invincibleParticles = GetComponentInChildren<ParticleSystem>();
-        invincibleParticles.Play();
-
-        isInvincible = true;
     }
 
-    private IEnumerator StartSneakerPowerup()
+    private void StartSneakerPowerup()
     {
-        if(!superSpeedEnabled)
+        StartCoroutine(ResetSneakerPowerup());
+
+        if (!superSpeedEnabled)
         {
             superSpeedEnabled = true;
             movementScript.speed = 15f;
             // Increase pitch of music
             mainAudio.pitch = 1.5f;
         }
+    }
 
+    private IEnumerator ResetSneakerPowerup()
+    {
         yield return new WaitForSeconds(15f);
 
         // Reset speed
@@ -333,4 +345,3 @@ public class PlayerController : MonoBehaviour
     }
 
 }
-

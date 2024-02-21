@@ -12,7 +12,7 @@ public class PlayerMovement : MonoBehaviour
     private float idleDuration = 6f;
     public bool isJumping { get { return playerController.state == PlayerState.jumping; } }
 
-    void Update()
+    private void Update()
     {
 
         if(playerController.state == PlayerState.hurt || PermanentUI.perm.endLevel)
@@ -21,23 +21,24 @@ public class PlayerMovement : MonoBehaviour
         float hDirection = Input.GetAxis("Horizontal");
         float virection = Input.GetAxis("Vertical");
 
-        if(hDirection < 0)
+        if (hDirection < 0)
         {
             MovePlayerLeft();
         }
-        else if(hDirection > 0)
+        else if (hDirection > 0)
         {
             MovePlayerRight();
         }
 
-        if(virection < 0) {
+        if (virection < 0)
+		{
             MovePlayerDown();
         }
 
         // Jumping
-        if(Input.GetButtonDown("Jump") && playerController.coll.IsTouchingLayers(playerController.ground))
+        if (Input.GetButtonDown("Jump") && playerController.coll.IsTouchingLayers(playerController.ground))
         {
-            Jump();
+        	Jump();
         }
 
         TrackIdleTime();
@@ -90,10 +91,12 @@ public class PlayerMovement : MonoBehaviour
 
     }
 
-    public void KnockPlayerBack(Enemy enemy)
+    public void KnockPlayerBack(GameObject enemyObject)
     {
+        Enemy enemy = enemyObject.GetComponent<Enemy>();
+
         // Enemy is to my right
-        if(enemy.transform.position.x > transform.position.x)
+        if (enemy.transform.position.x > transform.position.x)
         {
             // I should be damaged and move left
             playerController.rb.velocity = new Vector2(-playerController.hurtForce, 5);

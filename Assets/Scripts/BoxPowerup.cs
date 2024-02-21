@@ -15,7 +15,7 @@ public class BoxPowerup : MonoBehaviour
     }
 
     public void Collected()
-    {      
+    {
         GetComponent<BoxCollider2D>().enabled = false;
         anim.SetTrigger("collected");
         allAudios[0].Play(); // explode sound
@@ -23,7 +23,7 @@ public class BoxPowerup : MonoBehaviour
 
     private void Disappear()
     {
-        Destroy(this.gameObject);
+        Destroy(gameObject);
     }
 
     private void ShowBroken()

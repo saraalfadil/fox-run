@@ -6,7 +6,7 @@ public class GravityHelper : MonoBehaviour
 {
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if(collision.tag == "Player")
+        if (collision.tag == "Player")
         {
             collision.gameObject.GetComponent<PlayerController>().enabled = false;
         }

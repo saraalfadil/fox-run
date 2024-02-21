@@ -4,26 +4,27 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public class GemCollection : MonoBehaviour 
+public class GemCollection : MonoBehaviour
 {
     [SerializeField] private GameObject gem;
     private bool dropGems = false;
     private float gemTimer = 0f;
-    private float gemDuration = 1f;    
-    private int defaultSpawnCount = 6;  
+    private float gemDuration = 1f;
+    private int defaultSpawnCount = 6;
     private List<GameObject> gems = new List<GameObject>();
 
-    private void Update() {
+    private void Update()
+    {
 
         ScatterGems();
-
     }
 
-    public void ScatterGems() 
+    public void ScatterGems()
     {
         // Keep track of when gems are suspended
         gemTimer += Time.deltaTime;
-        if (gemTimer >= gemDuration) {
+        if (gemTimer >= gemDuration)
+        {
             gemTimer = 0f;
             dropGems = true;
         }
@@ -31,7 +32,7 @@ public class GemCollection : MonoBehaviour
         // Continously scatter gems outward from player each frame, them drop at the same time
         float radiusIncreaseRate = 0.5f;
         for (int i = gems.Count - 1; i >= 0; i--)
-        {     
+        {
 
             // Remove destroyed gems from gem collection
             if (gems[i] == null || gems[i].GetComponent<Gem>() == null)
@@ -45,15 +46,15 @@ public class GemCollection : MonoBehaviour
             float x = Mathf.Cos(angle) * (.01f + radiusIncreaseRate * Time.deltaTime);
             float y = Mathf.Sin(angle) * (.01f + radiusIncreaseRate * Time.deltaTime);
 
-            // Continuously update each gem position 
+            // Continuously update each gem position
             Gem gem = gems[i].GetComponent<Gem>();
             Vector3 newPos = gem.transform.position + new Vector3(x, y, 0);
             gem.transform.position = newPos;
 
             // Drop gems to ground
-            if (dropGems) 
+            if (dropGems)
                 gem.ChangeCollider();
-            
+
         }
 
     }
@@ -66,7 +67,7 @@ public class GemCollection : MonoBehaviour
 
     // Instantiates several gem game objects in a semicircle from the player's current position
     public void SpawnGems(int collectedGems)
-    {   
+    {
         Vector3 playerPosition = transform.position;
 
         int spawnCount = collectedGems < defaultSpawnCount && collectedGems > 0 ? collectedGems : defaultSpawnCount;
@@ -79,10 +80,10 @@ public class GemCollection : MonoBehaviour
             float angle = i * Mathf.PI / (spawnCount - 1);
             float x = Mathf.Cos(angle) * radius;
             float y = Mathf.Sin(angle) * radius;
-            
+
             Vector3 pos = playerPosition + new Vector3(x, y, 0);
             gems.Add((GameObject)Instantiate(gem, pos, Quaternion.identity));
-        }  
+        }
 
     }
 
