@@ -32,7 +32,7 @@ public class Gem : MonoBehaviour
 
     private void Disappear()
     {
-        Destroy(gameObject);
+        Destroy(this.gameObject);
     }
 
     public void ChangeCollider()

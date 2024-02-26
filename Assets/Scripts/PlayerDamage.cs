@@ -71,7 +71,7 @@ public class PlayerDamage : MonoBehaviour
         	// Disable shield
         	shield.SetActive(false);
         }
-		else
+		    else
         {
         	TakeDamage();
         }
