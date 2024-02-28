@@ -4,11 +4,11 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public class GemCollection : MonoBehaviour
+public class GemCollection: MonoBehaviour
 {
     private bool dropGems = false;
-    private float gemDuration = 1f;
-    private int defaultSpawnCount = 6;
+    private float gemSuspensionDuration = 1f;
+    private int defaultGemCount = 6;
     float radiusIncreaseRate = 0.5f;
     [SerializeField] private GameObject gem;
     private List<GameObject> gems = new List<GameObject>();
@@ -23,10 +23,11 @@ public class GemCollection : MonoBehaviour
       ScatterGems();
     }
 
+    // Continously scatter gems outward from player each frame
+	// then, drop at the same time
     public void ScatterGems()
     {
 
-        // Continously scatter gems outward from player each frame, them drop at the same time
         for (int i = gems.Count - 1; i >= 0; i--)
         {
 
@@ -39,25 +40,31 @@ public class GemCollection : MonoBehaviour
 
             Gem gem = gems[i].GetComponent<Gem>();
 
-            // Update gem position in circular shape
-            UpdateGemPosition(gem, i);
-
-            // Drop gems to ground
-            if (dropGems)
-                gem.ChangeCollider();
+            ScatterGem(i, gem);
 
         }
 
     }
 
-    private void UpdateGemPosition(Gem gem, int gemIndex)
+    private void ScatterGem(int gemIndex, Gem gem)
+    {
+      // Update gem position in circular shape
+      UpdateGemPosition(gemIndex, gem);
+
+      // Drop gems to ground
+      if (dropGems)
+          gem.ChangeCollider();
+    }
+
+
+    private void UpdateGemPosition(int gemIndex, Gem gem)
     {
       // Increase the radius of the circle gradually
       float angle = gemIndex * Mathf.PI * 2 / gems.Count;
-      float x = Mathf.Cos(angle) * (.01f + radiusIncreaseRate * Time.deltaTime);
-      float y = Mathf.Sin(angle) * (.01f + radiusIncreaseRate * Time.deltaTime);
+      float radius = .01f + radiusIncreaseRate * Time.deltaTime;
+      float x = Mathf.Cos(angle) * radius;
+      float y = Mathf.Sin(angle) * radius;
 
-      // Continuously update each gem position
       Vector3 newPos = gem.transform.position + new Vector3(x, y, 0);
       gem.transform.position = newPos;
 
@@ -65,13 +72,12 @@ public class GemCollection : MonoBehaviour
 
     private IEnumerator SuspendGems()
     {
-      yield return new WaitForSeconds(gemDuration);
+      yield return new WaitForSeconds(gemSuspensionDuration);
       dropGems = true;
     }
 
     public void LoseGems(int collectedGems)
     {
-        // Spawn gems
         SpawnGems(collectedGems);
     }
 
@@ -79,26 +85,38 @@ public class GemCollection : MonoBehaviour
     public void SpawnGems(int collectedGems)
     {
 
-        int spawnCount = collectedGems < defaultSpawnCount && collectedGems > 0 ? collectedGems : defaultSpawnCount;
+        int gemCount;
+        if (collectedGems > 0 && collectedGems < defaultGemCount)
+          gemCount = collectedGems;
+        else
+          gemCount = defaultGemCount;
 
         // Spawn gems in a semicircle
-        for (int i = 1; i < spawnCount; i++)
+        for (int i = 1; i < gemCount; i++)
         {
-            Vector3 gemPos = GetGemPosition(i, spawnCount);
-
-            GameObject gameObject = Instantiate(gem, gemPos, Quaternion.identity);
-
-            gems.Add(gameObject);
+          GameObject gemObject = SpawnGem(i, gemCount);
+          gems.Add(gemObject);
         }
 
     }
 
-    private Vector3 GetGemPosition(int i, int spawnCount)
+    // Instantiates gem object
+    private GameObject SpawnGem(int gemIndex, int gemCount)
+    {
+        Vector3 gemPos = GetGemPosition(gemIndex, gemCount);
+
+        GameObject gemObject = Instantiate(gem, gemPos, Quaternion.identity);
+
+        return gemObject;
+    }
+
+    // Given index, returns expected position of gem relative to player
+    private Vector3 GetGemPosition(int gemIndex, int gemCount)
     {
 
         // semicircle (180 degrees)
         float radius = 2.5f;
-        float angle = i * Mathf.PI / (spawnCount - 1);
+        float angle = gemIndex * Mathf.PI / (gemCount - 1);
         float x = Mathf.Cos(angle) * radius;
         float y = Mathf.Sin(angle) * radius;
 

@@ -57,13 +57,21 @@ public class Gem : MonoBehaviour
         while (elapsedTime < duration)
         {
             float newAlpha = Mathf.Lerp(startAlpha, targetAlpha, elapsedTime / duration);
-            sprite.color = new Color(sprite.color.r, sprite.color.g, sprite.color.b, newAlpha);
+
+            UpdateSpriteAlpha(newAlpha);
 
             elapsedTime += Time.deltaTime;
         }
 
         // Ensure the final alpha is set
-        sprite.color = new Color(sprite.color.r, sprite.color.g, sprite.color.b, targetAlpha);
+        UpdateSpriteAlpha(targetAlpha);
+    }
+
+    private void UpdateSpriteAlpha(float alpha)
+    {
+      Color color = new Color(sprite.color.r, sprite.color.g, sprite.color.b, alpha);
+
+      sprite.color = color;
     }
 
 }

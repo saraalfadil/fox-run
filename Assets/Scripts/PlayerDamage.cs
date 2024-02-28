@@ -4,17 +4,16 @@ using UnityEngine;
 
 public class PlayerDamage : MonoBehaviour
 {
-    public bool preventDamage = false;
-    private float preventDamageTimer = 0f;
-    private float preventDamageDuration = 3f;
     private bool isFlashing = false;
-    [SerializeField] PlayerController playerController;
-    [SerializeField] private GemCollection gemCollection;
+    public bool preventDamage = false;
+    private float preventDamageDuration = 3f;
     [SerializeField] private GameObject shield;
+    [SerializeField] private GemCollection gemCollection;
+    [SerializeField] PlayerController playerController;
 
     private void Update()
     {
-        TrackTemporaryInvincibility();
+        PermanentUI.perm.healthStat.text = PermanentUI.perm.health.ToString();
     }
 
     private void Start()
@@ -22,82 +21,79 @@ public class PlayerDamage : MonoBehaviour
         gemCollection = GetComponent<GemCollection>();
     }
 
-    private void TrackTemporaryInvincibility()
-    {
-
-        // Keep track of temporary invincibility
-        preventDamageTimer += Time.deltaTime;
-        if (preventDamageTimer >= preventDamageDuration)
-        {
-            preventDamageTimer = 0f;
-            preventDamage = false;
-        }
-
-    }
-
     public void DecreaseHealth()
     {
 
-        // Player is temporarily protected from taking damage
+        // Temporarily protected from taking damage
         if (preventDamage)
             return;
 
-        PermanentUI.perm.healthStat.text = PermanentUI.perm.health.ToString();
-        if (PermanentUI.perm.health <= 0)
-        {
+        if (PermanentUI.perm.health > 0)
+            HandleTakeDamage();
+        else
             // Show game over
             PermanentUI.perm.GameOver();
-        }
-        else
-        {
-            HandleTakeDamage();
-        }
 
     }
+
+	// If shield is enabled
+	// player doesn't take any damage
 
     private void HandleTakeDamage()
     {
 
-        if(preventDamage)
-            return;
+        StartCoroutine(TemporarilyPreventDamage());
 
-        preventDamage = true;
         playerController.state = PlayerState.hurt;
 
-        // If shield is enabled
-        // player doesn't take any damage
         if (shield.activeSelf)
-        {
-        	// Disable shield
-        	shield.SetActive(false);
-        }
-		    else
-        {
-        	TakeDamage();
-        }
+            // Disable shield
+            shield.SetActive(false);
+		else
+            TakeDamage();
 
+    }
+
+    private IEnumerator TemporarilyPreventDamage()
+    {
+        preventDamage = true;
+
+        yield return new WaitForSeconds(preventDamageDuration);
+
+        preventDamage = false;
     }
 
     private void TakeDamage()
 	{
+		LoseLives(1);
 
-        // If player doesn't have any gems, decrease health
-        if (PermanentUI.perm.gems < 1)
-            PermanentUI.perm.health -= 1;
+		LoseGems();
+	}
 
+    private void LoseGems()
+    {
         // Lose collected gems
         int collectedGems = PermanentUI.perm.gems;
         gemCollection.LoseGems(collectedGems);
 
         // Reset gems to 0
         PermanentUI.perm.gems = 0;
+    }
 
+	// If player doesn't have any gems, decrease health
+    private void LoseLives(int lifeCount)
+    {
+		if (PermanentUI.perm.gems > 1)
+			return;
+
+		PermanentUI.perm.health -= lifeCount;
     }
 
     public IEnumerator ResumeIdleAfterHurt()
     {
         StartPlayerFlashAnimation();
         yield return new WaitForSeconds(.5f);
+
         if (Mathf.Abs(playerController.rb.velocity.x) < .1f)
         {
             playerController.state = PlayerState.idle;
@@ -124,8 +120,7 @@ public class PlayerDamage : MonoBehaviour
         while (elapsedTime < flashDuration)
         {
             float newColor = Mathf.PingPong(elapsedTime * flashSpeed, 1f);
-            Color flashColor = new Color(originalColor.r, originalColor.g, originalColor.b, newColor);
-            playerController.sprite.color = flashColor;
+            UpdatePlayerColor(originalColor, newColor);
 
             elapsedTime += Time.deltaTime;
             yield return null;
@@ -134,6 +129,12 @@ public class PlayerDamage : MonoBehaviour
         playerController.sprite.color = originalColor;
         isFlashing = false;
 
+    }
+
+    private void UpdatePlayerColor(Color oColor, float newColor)
+    {
+      Color flashColor = new Color(oColor.r, oColor.g, oColor.b, newColor);
+      playerController.sprite.color = flashColor;
     }
 
 }

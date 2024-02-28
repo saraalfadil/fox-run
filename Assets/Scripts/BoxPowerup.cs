@@ -23,7 +23,7 @@ public class BoxPowerup : MonoBehaviour
 
     private void Disappear()
     {
-        Destroy(gameObject);
+        Destroy(this.gameObject);
     }
 
     private void ShowBroken()
