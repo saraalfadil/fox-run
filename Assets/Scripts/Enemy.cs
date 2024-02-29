@@ -11,6 +11,8 @@ public class Enemy : MonoBehaviour
     protected AudioSource explodeSound;
     public GameObject damageText;
     private GameObject score;
+   	private Transform leftCap;
+    private Transform rightCap;
 
     protected virtual void Start()
     {
@@ -41,4 +43,35 @@ public class Enemy : MonoBehaviour
         Destroy(this.gameObject);
         Destroy(score);
     }
+
+	public bool IsFacingLeft()
+	{
+		return transform.localScale.x == -1;
+	}
+
+	public bool IsFacingRight()
+	{
+		return transform.localScale.x == 1;
+	}
+	
+	public void FaceLeft()
+	{
+		transform.localScale = new Vector3(-1, 1);
+	}
+
+	public void FaceRight()
+	{
+		transform.localScale = new Vector3(1, 1, 1);
+	}
+
+	public bool IsPastLeftCap()
+	{
+		return transform.position.x > leftCap.position.x;
+	}
+
+	public bool IsPastRightCap()
+	{
+		return transform.position.x < rightCap.position.x;
+	}
+
 }

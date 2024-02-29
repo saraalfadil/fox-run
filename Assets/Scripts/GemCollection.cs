@@ -7,9 +7,9 @@ using TMPro;
 public class GemCollection: MonoBehaviour
 {
     private bool dropGems = false;
-    private float gemSuspensionDuration = 1f;
     private int defaultGemCount = 6;
     float radiusIncreaseRate = 0.5f;
+	private float gemSuspensionDuration = 1f;
     [SerializeField] private GameObject gem;
     private List<GameObject> gems = new List<GameObject>();
 

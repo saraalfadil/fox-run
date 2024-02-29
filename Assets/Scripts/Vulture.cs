@@ -19,47 +19,50 @@ public class Vulture : Enemy
 
     private void Move() 
     {
-        if(facingLeft)
+        if (facingLeft)
         {
-
             // Check if we are past the left cap
-            if(transform.position.x > leftCap.position.x)
+            if (IsPastLeftCap())
             {
                 // Check if sprite is facing left
-                if(transform.localScale.x != -1)
+                if (!IsFacingLeft())
                 {
-                    transform.localScale = new Vector3(-1, 1);
+                    FaceLeft();
                 }
-                rb.velocity = new Vector2(-jumpLength, rb.velocity.y);
+                FlyLeft();
             }
             else 
             {
                 facingLeft = false;
             }
-
         }
-
         else 
         {
-            
             // Check if we are past the right cap
-            if(transform.position.x < rightCap.position.x)
+            if (IsPastRightCap())
             {
-                // Check if sprite is facing left
-                if(transform.localScale.x != 1)
+                // Check if sprite is facing right
+                if (!IsFacingRight())
                 {
-                    transform.localScale = new Vector3(1, 1, 1);
-                    
+                    FaceRight();
                 }
-                rb.velocity = new Vector2(jumpLength, rb.velocity.y);
-
+               	FlyRight();
             }
             else 
             {
                 facingLeft = true;
             }
         }
- 
     }
 
+	private void FlyLeft()
+	{
+		rb.velocity = new Vector2(-jumpLength, rb.velocity.y);
+	}
+
+	private void FlyRight()
+	{
+		rb.velocity = new Vector2(jumpLength, rb.velocity.y);
+	}
+	
 }

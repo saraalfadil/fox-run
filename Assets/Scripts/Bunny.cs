@@ -23,21 +23,16 @@ public class Bunny : Enemy
 
         if (facingRight)
         {
-
             // Check if we are past the right cap
-            if (transform.position.x < rightCap.position.x)
+            if (IsPastRightCap())
             {
                 // Check if sprite is facing right
-                if (transform.localScale.x != 1)
+                if (!IsFacingRight())
                 {
                   // Face the right direction
-                  transform.localScale = new Vector3(1, 1, 1);
+                  FaceRight();
                 }
-                // If touching ground, then jump
-                if (coll.IsTouchingLayers(ground))
-                {
-                    rb.velocity = new Vector2(jumpLength, jumpHeight);
-                }
+                JumpRight();
             }
             else
             {
@@ -45,33 +40,41 @@ public class Bunny : Enemy
                 facingRight = false;
             }
         }
-
         else
         {
-
             // Check if we are past the left cap
-            if (transform.position.x > leftCap.position.x)
+            if (IsPastLeftCap())
             {
-
                 // Check if sprite is facing left
-                if (transform.localScale.x != -1)
+                if (!IsFacingLeft())
                 {
                     // Face the left direction
-                    transform.localScale = new Vector3(-1, 1);
+                    FaceLeft();
                 }
-                // If touching ground, then jump
-                if (coll.IsTouchingLayers(ground))
-                {
-                    rb.velocity = new Vector2(-jumpLength, jumpHeight);
-                }
+                JumpLeft();
             }
             else
             {
                 facingRight = true;
             }
-
         }
-
     }
+	private void JumpLeft()
+	{
+		// If touching ground, then jump
+		if (coll.IsTouchingLayers(ground))
+		{
+			rb.velocity = new Vector2(-jumpLength, jumpHeight);
+		}
+	}
+
+	private void JumpRight()
+	{
+		// If touching ground, then jump
+		if (coll.IsTouchingLayers(ground))
+		{
+			rb.velocity = new Vector2(jumpLength, jumpHeight);
+		}
+	}
 
 }

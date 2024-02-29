@@ -20,7 +20,12 @@ public class Frog : Enemy
 
     private void Update()
     {
-        // Transition from jump to fall
+		AnimationState();
+    }
+
+	private void AnimationState()
+	{
+		// Transition from jump to fall
         if (anim.GetBool("jumping"))
         {
             if (rb.velocity.y < .1f)
@@ -39,65 +44,65 @@ public class Frog : Enemy
                 anim.SetBool("jumping", false);
             }
         }
-    }
+	}
 
     private void Move()
     {
-
         if (facingLeft)
         {
-
             // Check if we are past the left cap
-            if (transform.position.x > leftCap.position.x)
+            if (IsPastLeftCap())
             {
                 // Check if sprite is facing right
-                if (transform.localScale.x != 1)
+                if (!IsFacingRight())
                 {
                     // Face the right direction
-                    transform.localScale = new Vector3(1, 1, 1);
+                    FaceRight();
                 }
-                // If touching ground, then jump
-                if (coll.IsTouchingLayers(ground))
-                {
-                    rb.velocity = new Vector2(-jumpLength, jumpHeight);
-                    anim.SetBool("jumping", true);
-                }
+                JumpLeft();
             }
             else
             {
                 facingLeft = false;
             }
         }
-
         else
         {
             // Check if we are past the right cap
-            if (transform.position.x < rightCap.position.x)
+            if (IsPastRightCap())
             {
                 // Check if sprite is facing left
-                if (transform.localScale.x != -1)
+                if (!IsFacingLeft())
                 {
                     // Face the left direction
-                    transform.localScale = new Vector3(-1, 1);
+                    FaceLeft();
                 }
-                // If touching ground, jump
-                if (coll.IsTouchingLayers(ground))
-                {
-                    rb.velocity = new Vector2(jumpLength, jumpHeight);
-                    anim.SetBool("jumping", true);
-                }
+                JumpRight();
             }
             else
             {
                 facingLeft = true;
             }
         }
-
     }
 
-    private void Jump()
-    {
-        rb.velocity = new Vector2(-jumpLength, jumpHeight);
-    }
+	private void JumpLeft()
+	{
+		// If touching ground, then jump
+		if (coll.IsTouchingLayers(ground))
+		{
+			rb.velocity = new Vector2(-jumpLength, jumpHeight);
+			anim.SetBool("jumping", true);
+		}
+	}
 
+	private void JumpRight()
+	{
+		// If touching ground, then jump
+		if (coll.IsTouchingLayers(ground))
+		{
+			rb.velocity = new Vector2(jumpLength, jumpHeight);
+			anim.SetBool("jumping", true);
+		}
+	}
 }
