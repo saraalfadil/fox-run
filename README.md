@@ -1,10 +1,10 @@
 Simple 2D platformer made with Unity/C#
 
-![Gameplay Screenshot - Fox looking at cherry powerup](https://img.itch.zone/aW1hZ2UvMjMxMDE4OS8xMzY4OTc4My5wbmc=/347x500/UjIQBC.png)
+![Gameplay Screenshot - Fox looking at gem powerup](https://img.itch.zone/aW1hZ2UvMjMxMDE4OS8xNTIxNzcyOC5wbmc=/250x600/7UyFIe.png)
 
-![Gameplay Screenshot - Fox standing on bridge](https://img.itch.zone/aW1hZ2UvMjMxMDE4OS8xMzY5MzM5MC5wbmc=/347x500/%2Fi6Ty1.png)
+![Gameplay Screenshot - Fox standing on bridge](https://img.itch.zone/aW1hZ2UvMjMxMDE4OS8xNTIxNzcyOS5wbmc=/250x600/CumfSZ.png)
 
-![Gameplay Screenshot - Fox on cliff](https://img.itch.zone/aW1hZ2UvMjMxMDE4OS8xMzY5MzM3NS5wbmc=/347x500/3V2trJ.png)
+![Gameplay Screenshot - Fox on cliff](https://img.itch.zone/aW1hZ2UvMjMxMDE4OS8xNTIxNzczMC5wbmc=/250x600/83twXp.png)
 
 ## Asset credits
 
