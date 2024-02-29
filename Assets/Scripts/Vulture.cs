@@ -22,7 +22,7 @@ public class Vulture : Enemy
         if (facingLeft)
         {
             // Check if we are past the left cap
-            if (IsPastLeftCap())
+            if (IsPastLeftCap(leftCap))
             {
                 // Check if sprite is facing left
                 if (!IsFacingLeft())
@@ -39,7 +39,7 @@ public class Vulture : Enemy
         else 
         {
             // Check if we are past the right cap
-            if (IsPastRightCap())
+            if (IsPastRightCap(rightCap))
             {
                 // Check if sprite is facing right
                 if (!IsFacingRight())

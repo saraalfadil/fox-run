@@ -11,8 +11,6 @@ public class Enemy : MonoBehaviour
     protected AudioSource explodeSound;
     public GameObject damageText;
     private GameObject score;
-   	private Transform leftCap;
-    private Transform rightCap;
 
     protected virtual void Start()
     {
@@ -64,12 +62,12 @@ public class Enemy : MonoBehaviour
 		transform.localScale = new Vector3(1, 1, 1);
 	}
 
-	public bool IsPastLeftCap()
+	public bool IsPastLeftCap(Transform leftCap)
 	{
 		return transform.position.x > leftCap.position.x;
 	}
 
-	public bool IsPastRightCap()
+	public bool IsPastRightCap(Transform rightCap)
 	{
 		return transform.position.x < rightCap.position.x;
 	}
