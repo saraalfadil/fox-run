@@ -3,21 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using UnityEngine.SceneManagement;
 
 public class PermanentUI : MonoBehaviour
 {
     public int gems = 0;
 	public int health = 3;
 	public int score = 0;
-    public TextMeshProUGUI gemText;
+    public TextMeshProUGUI gemCountText;
     public TextMeshProUGUI gemLabel;
-    public TextMeshProUGUI healthStat;
-    public TextMeshProUGUI scoreText;
+    public TextMeshProUGUI healthCountText;
+    public TextMeshProUGUI scoreCountText;
     public static PermanentUI perm;
-    private bool isGameOver = false;
-    [SerializeField] private Canvas gameOver;
-    private CanvasGroup gameOverCanvasGroup;
     private Color32 originalColor;
 	private Color32 dangerColor;
     public bool endLevel;
@@ -63,9 +59,9 @@ public class PermanentUI : MonoBehaviour
 
     private void GetStats()
     {
-        healthStat.text = health.ToString();
-        gemText.text = gems.ToString();
-        scoreText.text = score.ToString();
+        healthCountText.text = health.ToString();
+        gemCountText.text = gems.ToString();
+        scoreCountText.text = score.ToString();
     }
 
     public void ResetStats()
@@ -81,64 +77,6 @@ public class PermanentUI : MonoBehaviour
             gemLabel.color = dangerColor;
         else
             gemLabel.color = originalColor;
-	}
-
-    public void GameOver()
-    {
-        if (isGameOver)
-            return;
-
-        isGameOver = true;
-
-		StartGameOverAudio();
-
-        // Freeze time
-        Time.timeScale = 0;
-
-        ShowGameOverScreen();
-
-        StartCoroutine(GameOverReset());
-    }
-
-	private void StartGameOverAudio()
-	{
-		// stop main audio
-        AudioSource[] allAudios = Camera.main.gameObject.GetComponents<AudioSource>();
-        allAudios[0].Stop();
-
-        // Play game over audio
-        AudioSource gameOverAudio = gameOver.GetComponent<AudioSource>();
-        gameOverAudio.Play();
-	}
-
-	private void ShowGameOverScreen()
-	{
-		// Display game over canvas overlay
-        gameOverCanvasGroup = gameOver.GetComponent<CanvasGroup>();
-        gameOverCanvasGroup.alpha = 1;
-	}
-
-    private IEnumerator GameOverReset()
-    {
-        // Resume time
-        float pauseEndTime = Time.realtimeSinceStartup + 6;
-        while (Time.realtimeSinceStartup < pauseEndTime)
-        {
-            yield return 0;
-        }
-
-        ResetGame();
-    }
-
-	private void ResetGame()
-	{
-		Time.timeScale = 1;
-
-        // Reset scene
-        SceneManager.LoadScene("Menu");
-
-        // Score, health, gems
-        ResetStats();
 	}
 
 	private void IncreaseGemCount(int gemCount)

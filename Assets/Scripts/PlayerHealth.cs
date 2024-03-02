@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,6 +11,7 @@ public class PlayerHealth : MonoBehaviour
     [SerializeField] private GameObject shield;
     [SerializeField] private GemCollection gemCollection;
     [SerializeField] PlayerController playerController;
+	public static event Action OnGameOver;
 
     private void Start()
     {
@@ -24,7 +26,7 @@ public class PlayerHealth : MonoBehaviour
 
 		if (PermanentUI.perm.health <= 0) 
 		{
-			PermanentUI.perm.GameOver(); 
+			OnGameOver?.Invoke(); 
 			return;
 		}
 
