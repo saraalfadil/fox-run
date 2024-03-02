@@ -27,7 +27,6 @@ public class Gem : MonoBehaviour
     {
         anim.SetTrigger("collected");
         gemSound.Play();
-        PermanentUI.perm.gems += 1;
     }
 
     private void Disappear()
@@ -69,9 +68,14 @@ public class Gem : MonoBehaviour
 
     private void UpdateSpriteAlpha(float alpha)
     {
-      Color color = new Color(sprite.color.r, sprite.color.g, sprite.color.b, alpha);
+		Color color = new Color(
+			sprite.color.r, 
+			sprite.color.g, 
+			sprite.color.b, 
+			alpha
+		);
 
-      sprite.color = color;
+      	sprite.color = color;
     }
 
 }

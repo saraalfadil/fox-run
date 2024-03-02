@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -14,7 +15,7 @@ public class PlayerController : MonoBehaviour
     private AudioSource mainAudio;
     private AudioSource invincibleAudio;
     // FSM
-    public PlayerState state = PlayerState.idle;
+    public PlayerState state;
     private bool isInvincible = false;
     private bool isFalling = false;
     private bool superSpeedEnabled = false;
@@ -22,50 +23,45 @@ public class PlayerController : MonoBehaviour
     // Inspector variables
     [SerializeField] public LayerMask ground;
     [SerializeField] private LayerMask rock;
-    [SerializeField] public float hurtForce = 10f;
     [SerializeField] private int defeatEnemyScore = 100;
     [SerializeField] private AudioSource footstep;
     [SerializeField] private AudioSource bounceSound;
     [SerializeField] private AudioSource spikesSound;
     [SerializeField] private AudioSource powerupSound;
     [SerializeField] private GameObject shield;
-    [SerializeField] private PlayerMovement movementScript;
-    [SerializeField] private PlayerDamage damageScript;
+    [SerializeField] public PlayerMovement movementScript;
+    [SerializeField] private PlayerHealth healthScript;    
+	[SerializeField] private PlayerInput inputScript;
+    public bool isTouchingGround { get { return coll.IsTouchingLayers(ground); } }
+	public bool isHurt { get { return state == PlayerState.hurt; } }
+	public static event Action<int> OnGemCollected;
+	public static event Action<int> OnLifeCollected;
+	public static event Action<int> OnEnemyDefeated;
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
         coll = GetComponent<CircleCollider2D>();
         sprite = GetComponent<SpriteRenderer>();
+		state = PlayerState.idle;
     }
 
     private void Start()
     {
-
         AudioSource[] allAudios = Camera.main.gameObject.GetComponents<AudioSource>();
         mainAudio = allAudios[0];
         invincibleAudio = allAudios[1];
-
-    }
-
-    private void GetStats()
-    {
-        PermanentUI.perm.healthStat.text = PermanentUI.perm.health.ToString();
-        PermanentUI.perm.gemText.text = PermanentUI.perm.gems.ToString();
-        PermanentUI.perm.scoreText.text = PermanentUI.perm.score.ToString();
     }
 
     private void Update()
     {
         AnimationState();
-
-        GetStats();
     }
 
     private void AnimationState()
     {
-
-        anim.SetInteger("state", (int)state); // set animation based on Enumerator state
+        anim.SetInteger("state", (int)state);
 
         if (state == PlayerState.jumping)
         {
@@ -77,7 +73,7 @@ public class PlayerController : MonoBehaviour
         }
         else if (state == PlayerState.falling)
         {
-            if (coll.IsTouchingLayers(ground))
+            if (isTouchingGround)
             {
                 state = PlayerState.idle;
                 isFalling = false;
@@ -85,7 +81,7 @@ public class PlayerController : MonoBehaviour
         }
         else if (state == PlayerState.hurt)
         {
-            StartCoroutine(damageScript.ResumeIdleAfterHurt());
+            StartCoroutine(healthScript.ResumeIdleAfterHurt());
         }
         else if (Mathf.Abs(rb.velocity.x) > 2f)
         {
@@ -153,8 +149,7 @@ public class PlayerController : MonoBehaviour
             if (isFalling)
             {
                 CollectPowerup(other.gameObject);
-
-                PermanentUI.perm.gems += 10;
+				OnGemCollected?.Invoke(10);
             }
         }
 
@@ -183,8 +178,7 @@ public class PlayerController : MonoBehaviour
             if (isFalling)
             {
                 CollectPowerup(other.gameObject);
-
-                PermanentUI.perm.health += 1;
+				OnLifeCollected?.Invoke(1);
             }
         }
 
@@ -193,7 +187,7 @@ public class PlayerController : MonoBehaviour
             HandleBounce();
         }
 
-        if (other.gameObject.tag == "Gem" && !damageScript.preventDamage)
+        if (other.gameObject.tag == "Gem" && !healthScript.preventDamage)
         {
             CollectGem(other.gameObject);
         }
@@ -206,6 +200,7 @@ public class PlayerController : MonoBehaviour
         {
             Gem gem = gemObject.GetComponent<Gem>();
             gem.Collected();
+			OnGemCollected?.Invoke(1);
         }
     }
 
@@ -230,7 +225,7 @@ public class PlayerController : MonoBehaviour
             movementScript.Jump(5f);
 
             // Player is hurt
-            damageScript.DecreaseHealth();
+            healthScript.DecreaseHealth();
         }
     }
 
@@ -258,7 +253,7 @@ public class PlayerController : MonoBehaviour
     private void PlayerHurt(GameObject enemyObject)
     {
         // Player gets hurt
-        damageScript.DecreaseHealth();
+        healthScript.DecreaseHealth();
         movementScript.KnockPlayerBack(enemyObject);
     }
 
@@ -270,16 +265,11 @@ public class PlayerController : MonoBehaviour
         if (isFalling)
             movementScript.Jump();
 
-        IncreaseScore();
+        OnEnemyDefeated?.Invoke(defeatEnemyScore);
 
         // the enemy is defeated
         enemy.JumpedOn();
 
-    }
-
-    private void IncreaseScore()
-    {
-        PermanentUI.perm.score += defeatEnemyScore;
     }
 
     private void PlayFootstep()

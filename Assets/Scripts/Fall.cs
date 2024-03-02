@@ -11,7 +11,7 @@ public class Fall : MonoBehaviour
     {
         if (collision.tag == "Player")
         {
-            PermanentUI.perm.Reset();
+            PermanentUI.perm.ResetStats();
 
             // better for multiple levels
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
