@@ -4992,8 +4992,9 @@ GameObject:
   - component: {fileID: 3780258492542464042}
   - component: {fileID: 3780258492542464041}
   - component: {fileID: 3780258492542464038}
+  - component: {fileID: 2666246712586262971}
+  - component: {fileID: 2918797495902683664}
   - component: {fileID: 4532315792777785192}
-  - component: {fileID: 6436413816275432322}
   - component: {fileID: 4004270331573669593}
   - component: {fileID: 3780258492542464037}
   - component: {fileID: 3780258492542464039}
@@ -5108,7 +5109,37 @@ MonoBehaviour:
   powerupSound: {fileID: 2104206293}
   shield: {fileID: 135910508}
   movementScript: {fileID: 4532315792777785192}
-  damageScript: {fileID: 6436413816275432322}
+  healthScript: {fileID: 2918797495902683664}
+  inputScript: {fileID: 2666246712586262971}
+--- !u!114 &2666246712586262971
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3780258492542464040}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8c7f69f85002754fa8fb3cb77b4b699, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerController: {fileID: 0}
+--- !u!114 &2918797495902683664
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3780258492542464040}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7acdf4686ecc2324188ada2ea8702144, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  preventDamage: 0
+  shield: {fileID: 135910508}
+  gemCollection: {fileID: 4004270331573669593}
+  playerController: {fileID: 3780258492542464038}
 --- !u!114 &4532315792777785192
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5125,22 +5156,6 @@ MonoBehaviour:
   speed: 5
   jumpForce: 20
   hasMoved: 1
---- !u!114 &6436413816275432322
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3780258492542464040}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7acdf4686ecc2324188ada2ea8702144, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  playerController: {fileID: 3780258492542464038}
-  preventDamage: 0
-  gemCollection: {fileID: 4004270331573669593}
-  shield: {fileID: 135910508}
 --- !u!114 &4004270331573669593
 MonoBehaviour:
   m_ObjectHideFlags: 0

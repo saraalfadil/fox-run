@@ -103,8 +103,8 @@ public class GemCollection: MonoBehaviour
     // Instantiates gem object
     private GameObject SpawnGem(int gemIndex, int gemCount)
     {
+		
         Vector3 gemPos = GetGemPosition(gemIndex, gemCount);
-
         GameObject gemObject = Instantiate(gem, gemPos, Quaternion.identity);
 
         return gemObject;

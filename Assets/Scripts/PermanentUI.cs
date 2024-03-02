@@ -7,21 +7,34 @@ using UnityEngine.SceneManagement;
 
 public class PermanentUI : MonoBehaviour
 {
-    // Player stats
     public int gems = 0;
+	public int health = 3;
+	public int score = 0;
     public TextMeshProUGUI gemText;
     public TextMeshProUGUI gemLabel;
-    public int health;
     public TextMeshProUGUI healthStat;
-    public int score = 0;
     public TextMeshProUGUI scoreText;
     public static PermanentUI perm;
-
     private bool isGameOver = false;
     [SerializeField] private Canvas gameOver;
     private CanvasGroup gameOverCanvasGroup;
     private Color32 originalColor;
+	private Color32 dangerColor;
     public bool endLevel;
+
+    private void OnEnable()
+    {
+        PlayerController.OnGemCollected += IncreaseGemCount;
+		PlayerController.OnLifeCollected += Increasehealth;
+		PlayerController.OnEnemyDefeated += IncreaseScore;
+    }
+
+    private void OnDisable()
+    {   
+        PlayerController.OnGemCollected -= IncreaseGemCount;
+		PlayerController.OnLifeCollected -= Increasehealth;
+		PlayerController.OnEnemyDefeated -= IncreaseScore;
+    }
 
     private void Start()
     {
@@ -38,24 +51,37 @@ public class PermanentUI : MonoBehaviour
         }
 
         originalColor = gemLabel.color;
+		dangerColor = new Color32(255, 0, 0, 255);
     }
 
     public void Update()
-    {
-        // Change label to red
-        if (gems == 0)
-            gemLabel.color = new Color32(255, 0, 0, 255);
-        else
-            gemLabel.color = originalColor;
+    {	
+		GetStats();
 
+        UpdateLabelColor();
     }
 
-    public void Reset()
+    private void GetStats()
     {
-        health = 5;
+        healthStat.text = health.ToString();
+        gemText.text = gems.ToString();
+        scoreText.text = score.ToString();
+    }
+
+    public void ResetStats()
+    {
+        health = 3;
         gems = 0;
         score = 0;
     }
+
+	private void UpdateLabelColor()
+	{
+        if (gems == 0)
+            gemLabel.color = dangerColor;
+        else
+            gemLabel.color = originalColor;
+	}
 
     public void GameOver()
     {
@@ -64,23 +90,33 @@ public class PermanentUI : MonoBehaviour
 
         isGameOver = true;
 
-        // stop main audio
+		StartGameOverAudio();
+
+        // Freeze time
+        Time.timeScale = 0;
+
+        ShowGameOverScreen();
+
+        StartCoroutine(GameOverReset());
+    }
+
+	private void StartGameOverAudio()
+	{
+		// stop main audio
         AudioSource[] allAudios = Camera.main.gameObject.GetComponents<AudioSource>();
         allAudios[0].Stop();
 
         // Play game over audio
         AudioSource gameOverAudio = gameOver.GetComponent<AudioSource>();
         gameOverAudio.Play();
+	}
 
-        // Freeze time
-        Time.timeScale = 0;
-
-        // Display game over canvas overlay
+	private void ShowGameOverScreen()
+	{
+		// Display game over canvas overlay
         gameOverCanvasGroup = gameOver.GetComponent<CanvasGroup>();
         gameOverCanvasGroup.alpha = 1;
-
-        StartCoroutine(GameOverReset());
-    }
+	}
 
     private IEnumerator GameOverReset()
     {
@@ -90,13 +126,33 @@ public class PermanentUI : MonoBehaviour
         {
             yield return 0;
         }
-        Time.timeScale = 1;
+
+        ResetGame();
+    }
+
+	private void ResetGame()
+	{
+		Time.timeScale = 1;
 
         // Reset scene
         SceneManager.LoadScene("Menu");
 
         // Score, health, gems
-        Reset();
+        ResetStats();
+	}
+
+	private void IncreaseGemCount(int gemCount)
+	{
+		gems += gemCount;
+	}
+
+    private void IncreaseScore(int defeatEnemyScore)
+    {
+    	score += defeatEnemyScore;
     }
 
+    private void Increasehealth(int lifeCount)
+    {
+    	health += lifeCount;
+    }
 }

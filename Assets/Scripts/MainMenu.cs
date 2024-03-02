@@ -8,7 +8,7 @@ public class MainMenu : MonoBehaviour
     public void PlayGame() 
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
-        PermanentUI.perm.Reset();
+        PermanentUI.perm.ResetStats();
     }
 
     public void Quit() 
@@ -24,7 +24,7 @@ public class MainMenu : MonoBehaviour
     {
         SceneManager.LoadScene("Level2");
 
-        PermanentUI.perm.Reset();
+        PermanentUI.perm.ResetStats();
         PermanentUI.perm.endLevel = false;
     }
 }
