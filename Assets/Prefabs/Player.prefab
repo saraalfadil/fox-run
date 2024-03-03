@@ -4992,6 +4992,7 @@ GameObject:
   - component: {fileID: 3780258492542464042}
   - component: {fileID: 3780258492542464041}
   - component: {fileID: 3780258492542464038}
+  - component: {fileID: 4548935036731990175}
   - component: {fileID: 2666246712586262971}
   - component: {fileID: 2918797495902683664}
   - component: {fileID: 4532315792777785192}
@@ -5101,7 +5102,6 @@ MonoBehaviour:
   rock:
     serializedVersion: 2
     m_Bits: 128
-  hurtForce: 15
   defeatEnemyScore: 100
   footstep: {fileID: 6382624372019793589}
   bounceSound: {fileID: 2104206292}
@@ -5111,6 +5111,19 @@ MonoBehaviour:
   movementScript: {fileID: 4532315792777785192}
   healthScript: {fileID: 2918797495902683664}
   inputScript: {fileID: 2666246712586262971}
+--- !u!114 &4548935036731990175
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3780258492542464040}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c2f05481557eb9f4d8a6b8d87d8065d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isFlashing: 0
 --- !u!114 &2666246712586262971
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5123,7 +5136,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c8c7f69f85002754fa8fb3cb77b4b699, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerController: {fileID: 0}
+  playerController: {fileID: 3780258492542464038}
 --- !u!114 &2918797495902683664
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5140,6 +5153,7 @@ MonoBehaviour:
   shield: {fileID: 135910508}
   gemCollection: {fileID: 4004270331573669593}
   playerController: {fileID: 3780258492542464038}
+  flashEffect: {fileID: 4548935036731990175}
 --- !u!114 &4532315792777785192
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5155,6 +5169,7 @@ MonoBehaviour:
   playerController: {fileID: 3780258492542464038}
   speed: 5
   jumpForce: 20
+  hurtForce: 10
   hasMoved: 1
 --- !u!114 &4004270331573669593
 MonoBehaviour:

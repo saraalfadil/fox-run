@@ -8,28 +8,30 @@ using UnityEngine.SceneManagement;
 public class NewTestScript
 {
     public GameObject ui;
-    public GameObject character;
+    public GameObject player;
 
     [Test]
     public void UI_SetStartingUI()
     {
-        ui = GameObject.Find("PlayerUI");
+        ui = GameObject.Find("==== UI ====");
         PermanentUI script = ui.GetComponent<PermanentUI>();
     
         Assert.IsTrue(script.gems == 0);
+		Assert.IsTrue(script.score == 0);
+		Assert.IsTrue(script.health == 3);
     }
 
     [Test]
-    public void TestPlayerJumps()
+    public IEnumerator TestPlayerJumps()
     {
 
-        character = GameObject.Find("Player");
-        PlayerController controller = this.character.GetComponent<PlayerController>();
-        //controller.movementScript.Jump();
-        //yield return new WaitForSeconds(0.5f);
-        //Assert.IsTrue(controller.movementScript.isJumping);
-        //yield return new WaitForSeconds(1f);
-        //Assert.IsFalse(controller.isJumping);
+        player = GameObject.Find("Player");
+        PlayerController controller = this.player.GetComponent<PlayerController>();
+        controller.movementScript.Jump();
+        yield return new WaitForSeconds(0.5f);
+        Assert.IsTrue(controller.movementScript.isJumping);
+        yield return new WaitForSeconds(1f);
+        Assert.IsFalse(controller.movementScript.isJumping);
     }
 
 }
