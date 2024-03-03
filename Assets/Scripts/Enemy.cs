@@ -6,22 +6,25 @@ using TMPro;
 
 public class Enemy : MonoBehaviour
 {
+	private Collider2D coll;
     protected Animator anim;
     protected Rigidbody2D rb;
     protected AudioSource explodeSound;
     public GameObject damageText;
     private GameObject score;
+	[SerializeField] protected LayerMask ground;
+    public bool isTouchingGround { get { return coll.IsTouchingLayers(ground); } }
 
     protected virtual void Start()
     {
         anim = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
         explodeSound = GetComponent<AudioSource>();
+		coll = GetComponent<Collider2D>();
     }
 
     public void JumpedOn()
     {
-
         score = Instantiate(damageText, transform.position, transform.rotation);
 
         anim.SetTrigger("explode");
@@ -32,8 +35,7 @@ public class Enemy : MonoBehaviour
             rb.bodyType = RigidbodyType2D.Kinematic;
         }
 
-        GetComponent<Collider2D>().enabled = false;
-
+        coll.enabled = false;
     }
 
     private void Death()

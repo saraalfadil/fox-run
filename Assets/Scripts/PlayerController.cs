@@ -217,16 +217,17 @@ public class PlayerController : MonoBehaviour
 
     private void HandleSpikesCollison()
     {
-        if (!isInvincible) {
-            // Play feedback sound
-            spikesSound.Play();
+        if (isInvincible) 
+			return;
 
-            // Jump up a tiny bit
-            movementScript.Jump(5f);
+		// Play feedback sound
+		spikesSound.Play();
 
-            // Player is hurt
-            healthScript.DecreaseHealth();
-        }
+		// Jump up a tiny bit
+		movementScript.Jump(5f);
+
+		// Player is hurt
+		healthScript.DecreaseHealth();
     }
 
     private void HandleBounce()
@@ -259,7 +260,6 @@ public class PlayerController : MonoBehaviour
 
     private void DefeatEnemy(GameObject enemyObject)
     {
-        Enemy enemy = enemyObject.GetComponent<Enemy>();
 
         // jump up
         if (isFalling)
@@ -268,6 +268,7 @@ public class PlayerController : MonoBehaviour
         OnEnemyDefeated?.Invoke(defeatEnemyScore);
 
         // the enemy is defeated
+		Enemy enemy = enemyObject.GetComponent<Enemy>();
         enemy.JumpedOn();
 
     }
@@ -276,6 +277,34 @@ public class PlayerController : MonoBehaviour
     {
         footstep.Play();
     }
+
+
+    private IEnumerator StartInvinciblePowerup()
+    {
+        yield return new WaitForSeconds(.60f);
+
+        // Limit powerup effect activation period
+        StartCoroutine(ResetInvinciblePowerUp());
+
+        BeInvincible();
+
+    }
+
+	private void BeInvincible()
+	{
+		if (isInvincible)
+			return;
+
+        // Change main music
+		mainAudio.Stop(); // stop main audio
+		invincibleAudio.Play(); // play invincible power up audio
+
+		// Display particle system
+		invincibleParticles = GetComponentInChildren<ParticleSystem>();
+		invincibleParticles.Play();
+
+		isInvincible = true;
+	}
 
     private IEnumerator ResetInvinciblePowerUp()
     {
@@ -291,47 +320,37 @@ public class PlayerController : MonoBehaviour
         invincibleParticles.Stop();
     }
 
-    private IEnumerator StartInvinciblePowerup()
-    {
-        yield return new WaitForSeconds(.60f);
-        // Limit powerup effect activation period
-        StartCoroutine(ResetInvinciblePowerUp());
-
-        if (!isInvincible)
-        {   // Change main music
-            mainAudio.Stop(); // stop main audio
-            invincibleAudio.Play(); // play invincible power up audio
-
-            // Display particle system
-            invincibleParticles = GetComponentInChildren<ParticleSystem>();
-            invincibleParticles.Play();
-
-            isInvincible = true;
-        }
-
-    }
-
     private void StartSneakerPowerup()
     {
         StartCoroutine(ResetSneakerPowerup());
 
-        if (!superSpeedEnabled)
-        {
-            superSpeedEnabled = true;
-            movementScript.speed = 15f;
-            // Increase pitch of music
-            mainAudio.pitch = 1.5f;
-        }
+        EnableSuperSpeed();
     }
+
+	private void EnableSuperSpeed()
+	{
+        if (superSpeedEnabled)
+			return;
+
+		superSpeedEnabled = true;
+		movementScript.speed = 15f;
+		// Increase pitch of music
+		mainAudio.pitch = 1.5f;
+	}
 
     private IEnumerator ResetSneakerPowerup()
     {
         yield return new WaitForSeconds(15f);
 
+        ResetSpeed();
+    }
+
+	private void ResetSpeed()
+	{
         // Reset speed
         superSpeedEnabled = false;
         mainAudio.pitch = 1;
         movementScript.speed = 5f;
-    }
+	}
 
 }

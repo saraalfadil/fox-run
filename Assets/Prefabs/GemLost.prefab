@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 6734690478711997415}
   - component: {fileID: 6734690478711997432}
   - component: {fileID: 6734690478711997411}
+  - component: {fileID: 4740353213659094099}
   - component: {fileID: -5954375705954396711}
   - component: {fileID: 531271693512881814}
   m_Layer: 0
@@ -218,6 +219,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   temporary: 1
+  fadeOutEffect: {fileID: 4740353213659094099}
+--- !u!114 &4740353213659094099
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6734690478711997433}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6fa90ae8c8c7dbd4c8bcb1367b931645, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!58 &-5954375705954396711
 CircleCollider2D:
   m_ObjectHideFlags: 0

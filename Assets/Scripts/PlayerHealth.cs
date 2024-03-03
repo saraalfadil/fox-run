@@ -5,13 +5,15 @@ using UnityEngine;
 
 public class PlayerHealth : MonoBehaviour
 {
-    private bool isFlashing = false;
+	public static event Action OnGameOver;
+	public static event Action OnLifeLost;
+	public static event Action OnGemsLost;
     public bool preventDamage = false;
     private float preventDamageDuration = 3f;
     [SerializeField] private GameObject shield;
     [SerializeField] private GemCollection gemCollection;
-    [SerializeField] PlayerController playerController;
-	public static event Action OnGameOver;
+    [SerializeField] private PlayerController playerController;
+	[SerializeField] private FlashEffect flashEffect;
 
     private void Start()
     {
@@ -69,7 +71,7 @@ public class PlayerHealth : MonoBehaviour
 
     private void TakeDamage()
 	{
-		LoseLives(1);
+		OnLifeLost?.Invoke();
 
 		LoseGems();
 	}
@@ -77,20 +79,10 @@ public class PlayerHealth : MonoBehaviour
     private void LoseGems()
     {
         // Lose collected gems
-        int collectedGems = PermanentUI.perm.gems;
-        gemCollection.LoseGems(collectedGems);
+        int collectedGemCount = PermanentUI.perm.gems;
+        gemCollection.LoseGems(collectedGemCount);
 
-        // Reset gems to 0
-        PermanentUI.perm.gems = 0;
-    }
-
-	// If player doesn't have any gems, decrease health
-    private void LoseLives(int lifeCount)
-    {
-		if (PermanentUI.perm.gems > 1)
-			return;
-
-		PermanentUI.perm.health -= lifeCount;
+		OnGemsLost?.Invoke();
     }
 
     public IEnumerator ResumeIdleAfterHurt()
@@ -106,45 +98,10 @@ public class PlayerHealth : MonoBehaviour
 
     public void StartPlayerFlashAnimation()
     {
-        if (!isFlashing)
+        if (!flashEffect.isFlashing)
         {
-            StartCoroutine(PlayerFlash());
+            StartCoroutine(flashEffect.Flash(playerController.sprite));
         }
-    }
-
-    private IEnumerator PlayerFlash()
-    {
-        isFlashing = true;
-
-        float elapsedTime = 0f;
-        float flashDuration = 3f;
-        float flashSpeed = 5.0f;
-        Color originalColor = playerController.sprite.color;
-
-        while (elapsedTime < flashDuration)
-        {
-            float newColor = Mathf.PingPong(elapsedTime * flashSpeed, 1f);
-            UpdatePlayerColor(originalColor, newColor);
-
-            elapsedTime += Time.deltaTime;
-            yield return null;
-        }
-
-        playerController.sprite.color = originalColor;
-        isFlashing = false;
-
-    }
-
-    private void UpdatePlayerColor(Color originalColor, float newColor)
-    {
-      	Color flashColor = new Color(
-			originalColor.r, 
-			originalColor.g, 
-			originalColor.b, 
-			newColor
-		);
-
-      	playerController.sprite.color = flashColor;
     }
 
 }

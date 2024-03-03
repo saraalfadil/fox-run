@@ -21,15 +21,19 @@ public class PermanentUI : MonoBehaviour
     private void OnEnable()
     {
         PlayerController.OnGemCollected += IncreaseGemCount;
-		PlayerController.OnLifeCollected += Increasehealth;
+		PlayerController.OnLifeCollected += IncreaseHealth;
 		PlayerController.OnEnemyDefeated += IncreaseScore;
+		PlayerHealth.OnLifeLost += DecreaseHealth;
+		PlayerHealth.OnGemsLost += ResetGemCount;
     }
 
     private void OnDisable()
     {   
         PlayerController.OnGemCollected -= IncreaseGemCount;
-		PlayerController.OnLifeCollected -= Increasehealth;
+		PlayerController.OnLifeCollected -= IncreaseHealth;
 		PlayerController.OnEnemyDefeated -= IncreaseScore;
+		PlayerHealth.OnLifeLost -= DecreaseHealth;
+		PlayerHealth.OnGemsLost -= ResetGemCount;
     }
 
     private void Start()
@@ -54,7 +58,7 @@ public class PermanentUI : MonoBehaviour
     {	
 		GetStats();
 
-        UpdateLabelColor();
+        GetLabelColor();
     }
 
     private void GetStats()
@@ -71,7 +75,7 @@ public class PermanentUI : MonoBehaviour
         score = 0;
     }
 
-	private void UpdateLabelColor()
+	private void GetLabelColor()
 	{
         if (gems == 0)
             gemLabel.color = dangerColor;
@@ -84,13 +88,27 @@ public class PermanentUI : MonoBehaviour
 		gems += gemCount;
 	}
 
+	private void ResetGemCount()
+	{
+		gems = 0;
+	}
+
     private void IncreaseScore(int defeatEnemyScore)
     {
     	score += defeatEnemyScore;
     }
 
-    private void Increasehealth(int lifeCount)
+    private void IncreaseHealth(int lifeCount)
     {
     	health += lifeCount;
+    }
+
+	// If player doesn't have any gems, decrease health
+	private void DecreaseHealth()
+    {
+		if (gems > 1)
+			return;
+
+		health -= 1;
     }
 }

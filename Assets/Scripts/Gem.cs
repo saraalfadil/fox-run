@@ -10,6 +10,7 @@ public class Gem : MonoBehaviour
     private Collider2D coll;
     private Rigidbody2D rb;
     public bool temporary = false;
+	[SerializeField] private FadeOutEffect fadeOutEffect;
 
     protected virtual void Start()
     {
@@ -43,39 +44,9 @@ public class Gem : MonoBehaviour
     private IEnumerator SelfDestruct()
     {
         yield return new WaitForSeconds(3f);
-        FadeOut();
+        fadeOutEffect.FadeOut(sprite);
         Disappear();
     }
-    private void FadeOut()
-    {
-        float startAlpha = sprite.color.a;
-        float targetAlpha = 0f;
-        float duration = 3f;
-        float elapsedTime = 0f;
 
-        while (elapsedTime < duration)
-        {
-            float newAlpha = Mathf.Lerp(startAlpha, targetAlpha, elapsedTime / duration);
-
-            UpdateSpriteAlpha(newAlpha);
-
-            elapsedTime += Time.deltaTime;
-        }
-
-        // Ensure the final alpha is set
-        UpdateSpriteAlpha(targetAlpha);
-    }
-
-    private void UpdateSpriteAlpha(float alpha)
-    {
-		Color color = new Color(
-			sprite.color.r, 
-			sprite.color.g, 
-			sprite.color.b, 
-			alpha
-		);
-
-      	sprite.color = color;
-    }
 
 }
