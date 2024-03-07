@@ -23,7 +23,6 @@ public class PlayerMovement : MonoBehaviour
         force = force != 0f ? force : jumpForce;
 
 		playerController.rb.velocity = new Vector2(playerController.rb.velocity.x, force);
-		playerController.state = PlayerState.jumping;
 		HasMoved();
 	
     }
@@ -44,7 +43,7 @@ public class PlayerMovement : MonoBehaviour
 
     public void MovePlayerDown()
     {
-        playerController.state = PlayerState.crouching;
+        //playerController.state = PlayerState.crouching;
         HasMoved();
     }
 

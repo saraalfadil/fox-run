@@ -3,24 +3,25 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum PlayerState { idle, running, jumping, falling, hurt, waiting, push, crouching };
-
 public class PlayerController : MonoBehaviour
 {
+	public static event Action<int> OnGemCollected;
+	public static event Action<int> OnLifeCollected;
+	public static event Action<int> OnEnemyDefeated;
     public Rigidbody2D rb;
-    private Animator anim;
+    public Animator anim;
     public CircleCollider2D coll;
     private ParticleSystem invincibleParticles;
     public SpriteRenderer sprite;
     private AudioSource mainAudio;
     private AudioSource invincibleAudio;
-    // FSM
     public PlayerState state;
-    private bool isInvincible = false;
-    private bool isFalling = false;
+	public StateMachine playerStateMachine;
+	public bool isTouchingGround { get { return coll.IsTouchingLayers(ground); } }
+	private bool isInvincible = false;
+    public bool isFalling = false;
+	public bool isHurt = false;
     private bool superSpeedEnabled = false;
-
-    // Inspector variables
     [SerializeField] public LayerMask ground;
     [SerializeField] private LayerMask rock;
     [SerializeField] private int defeatEnemyScore = 100;
@@ -30,13 +31,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private AudioSource powerupSound;
     [SerializeField] private GameObject shield;
     [SerializeField] public PlayerMovement movementScript;
-    [SerializeField] private PlayerHealth healthScript;    
+    [SerializeField] public PlayerHealth healthScript;    
 	[SerializeField] private PlayerInput inputScript;
-    public bool isTouchingGround { get { return coll.IsTouchingLayers(ground); } }
-	public bool isHurt { get { return state == PlayerState.hurt; } }
-	public static event Action<int> OnGemCollected;
-	public static event Action<int> OnLifeCollected;
-	public static event Action<int> OnEnemyDefeated;
 
     private void Awake()
     {
@@ -44,7 +40,7 @@ public class PlayerController : MonoBehaviour
         anim = GetComponent<Animator>();
         coll = GetComponent<CircleCollider2D>();
         sprite = GetComponent<SpriteRenderer>();
-		state = PlayerState.idle;
+		playerStateMachine = new StateMachine(this);
     }
 
     private void Start()
@@ -52,67 +48,13 @@ public class PlayerController : MonoBehaviour
         AudioSource[] allAudios = Camera.main.gameObject.GetComponents<AudioSource>();
         mainAudio = allAudios[0];
         invincibleAudio = allAudios[1];
+
+		playerStateMachine.Initialize(playerStateMachine.idleState);
     }
 
     private void Update()
     {
-        AnimationState();
-    }
-
-    private void AnimationState()
-    {
-        anim.SetInteger("state", (int)state);
-
-        if (state == PlayerState.jumping)
-        {
-            if (rb.velocity.y < .1f)
-            {
-                state = PlayerState.falling;
-                isFalling = true;
-            }
-        }
-        else if (state == PlayerState.falling)
-        {
-            if (isTouchingGround)
-            {
-                state = PlayerState.idle;
-                isFalling = false;
-            }
-        }
-        else if (state == PlayerState.hurt)
-        {
-            StartCoroutine(healthScript.ResumeIdleAfterHurt());
-        }
-        else if (Mathf.Abs(rb.velocity.x) > 2f)
-        {
-            if (coll.IsTouchingLayers(rock))
-            {
-                state = PlayerState.push;
-            }
-            else
-            {
-                state = PlayerState.running;
-            }
-        }
-        else if (state == PlayerState.push)
-        {
-            if (Mathf.Abs(rb.velocity.x) < 2f)
-            {
-                state = PlayerState.idle;
-            }
-        }
-        else if (!movementScript.hasMoved)
-        {
-            state = PlayerState.waiting;
-        }
-        else if (state == PlayerState.crouching)
-        {
-            state = PlayerState.crouching;
-        }
-        else
-        {
-            state = PlayerState.idle;
-        }
+		playerStateMachine.Update();
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -192,7 +134,6 @@ public class PlayerController : MonoBehaviour
             CollectGem(other.gameObject);
         }
     }
-
 
     private void CollectGem(GameObject gemObject)
     {
