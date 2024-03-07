@@ -57,7 +57,7 @@ public class PlayerHealth : MonoBehaviour
 
 	private void ShowHurt()
 	{
-		playerController.state = PlayerState.hurt;
+		playerController.isHurt = true;
 	}
 
     private IEnumerator TemporarilyPreventDamage()
@@ -83,17 +83,6 @@ public class PlayerHealth : MonoBehaviour
         gemCollection.LoseGems(collectedGemCount);
 
 		OnGemsLost?.Invoke();
-    }
-
-    public IEnumerator ResumeIdleAfterHurt()
-    {
-        StartPlayerFlashAnimation();
-        yield return new WaitForSeconds(.5f);
-
-        if (Mathf.Abs(playerController.rb.velocity.x) < .1f)
-        {
-            playerController.state = PlayerState.idle;
-        }
     }
 
     public void StartPlayerFlashAnimation()

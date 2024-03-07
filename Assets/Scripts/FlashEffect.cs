@@ -18,7 +18,7 @@ public class FlashEffect : MonoBehaviour
         while (elapsedTime < flashDuration)
         {
             float newColor = Mathf.PingPong(elapsedTime * flashSpeed, 1f);
-            UpdatePlayerColor(sprite, originalColor, newColor);
+            UpdateColor(sprite, originalColor, newColor);
 
             elapsedTime += Time.deltaTime;
             yield return null;
@@ -29,7 +29,7 @@ public class FlashEffect : MonoBehaviour
 
     }
 
-    private void UpdatePlayerColor(SpriteRenderer sprite, Color originalColor, float newColor)
+    private void UpdateColor(SpriteRenderer sprite, Color originalColor, float newColor)
     {
       	Color flashColor = new Color(
 			originalColor.r, 
