@@ -93,9 +93,9 @@ public class PermanentUI : MonoBehaviour
 		gems = 0;
 	}
 
-    private void IncreaseScore(int defeatEnemyScore)
+    private void IncreaseScore(Enemy enemy)
     {
-    	score += defeatEnemyScore;
+    	score += 100;
     }
 
     private void IncreaseHealth(int lifeCount)

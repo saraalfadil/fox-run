@@ -7,7 +7,7 @@ public class PlayerController : MonoBehaviour
 {
 	public static event Action<int> OnGemCollected;
 	public static event Action<int> OnLifeCollected;
-	public static event Action<int> OnEnemyDefeated;
+	public static event Action<Enemy> OnEnemyDefeated;
     public Rigidbody2D rb;
     public Animator anim;
     public CircleCollider2D coll;
@@ -202,15 +202,14 @@ public class PlayerController : MonoBehaviour
     private void DefeatEnemy(GameObject enemyObject)
     {
 
-        // jump up
         if (isFalling)
-            movementScript.Jump();
-
-        OnEnemyDefeated?.Invoke(defeatEnemyScore);
-
-        // the enemy is defeated
+		{
+			movementScript.Jump();
+		}
+            
 		Enemy enemy = enemyObject.GetComponent<Enemy>();
-        enemy.JumpedOn();
+
+        OnEnemyDefeated?.Invoke(enemy);
 
     }
 
@@ -218,7 +217,6 @@ public class PlayerController : MonoBehaviour
     {
         footstep.Play();
     }
-
 
     private IEnumerator StartInvinciblePowerup()
     {
