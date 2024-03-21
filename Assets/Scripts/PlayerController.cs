@@ -22,6 +22,7 @@ public class PlayerController : MonoBehaviour
     public bool isFalling = false;
 	public bool isHurt = false;
     private bool superSpeedEnabled = false;
+	public bool enteredSlide = false;
     [SerializeField] public LayerMask ground;
     [SerializeField] private LayerMask rock;
     [SerializeField] private int defeatEnemyScore = 100;
@@ -66,6 +67,18 @@ public class PlayerController : MonoBehaviour
         if(collision.tag == "Spikes")
         {
             HandleSpikesCollison();
+        }
+		if(collision.tag == "Slide")
+        {
+            enteredSlide = true;
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+		if(collision.tag == "Slide")
+        {
+            enteredSlide = false;
         }
     }
 

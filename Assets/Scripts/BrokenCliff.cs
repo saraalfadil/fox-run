@@ -5,9 +5,11 @@ using UnityEngine;
 public class BrokenCliff : MonoBehaviour
 {
 	[SerializeField] private FadeOutEffect fadeOutEffect;
+	public AudioSource brokenCliffSound;
 
 	public void DestroyBrokenCliff()
 	{
+		brokenCliffSound.Play();
 		StartCoroutine(SelfDestruct());
 	}
 

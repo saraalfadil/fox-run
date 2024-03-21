@@ -16,6 +16,7 @@ TagManager:
   - Gem
   - BoxPowerup
   - BoxPowerupGems
+  - Slide
   layers:
   - Default
   - TransparentFX
