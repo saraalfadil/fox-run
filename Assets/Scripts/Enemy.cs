@@ -7,7 +7,7 @@ using System;
 
 public class Enemy : MonoBehaviour
 {
-	private Collider2D coll;
+	public Collider2D coll;
     protected Animator anim;
     protected Rigidbody2D rb;
     protected AudioSource explodeSound;
