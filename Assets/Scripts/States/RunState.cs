@@ -33,6 +33,12 @@ public class RunState : IState
         {
 			player.playerStateMachine.TransitionTo(player.playerStateMachine.hurtState);
         }
+
+		if (player.enteredSlide)
+        {
+			player.playerStateMachine.TransitionTo(player.playerStateMachine.spinState);
+        }
+
 	}
 	public void Exit(){}
 }

@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-public enum PlayerState { idle, running, jumping, falling, hurt, waiting, push, crouching };
+public enum PlayerState { idle, running, jumping, falling, hurt, waiting, push, crouching, spin };
 
 [Serializable]
 public class StateMachine
@@ -16,6 +16,7 @@ public class StateMachine
 	public PushState pushState;
 	public WaitState waitState;
 	public CrouchState crouchState;
+	public SpinState spinState;
 
 	public StateMachine(PlayerController player)
 	{	
@@ -27,6 +28,7 @@ public class StateMachine
 		this.pushState = new PushState(player);
 		this.waitState = new WaitState(player);
 		this.crouchState = new CrouchState(player);
+		this.spinState = new SpinState(player);
 	}
 
 	public void Initialize(IState startingState)

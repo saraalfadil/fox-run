@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System;
 
 public class Enemy : MonoBehaviour
 {
-	private Collider2D coll;
+	public Collider2D coll;
     protected Animator anim;
     protected Rigidbody2D rb;
     protected AudioSource explodeSound;
@@ -14,6 +15,16 @@ public class Enemy : MonoBehaviour
     private GameObject score;
 	[SerializeField] protected LayerMask ground;
     public bool isTouchingGround { get { return coll.IsTouchingLayers(ground); } }
+
+    private void OnEnable()
+    {
+        PlayerController.OnEnemyDefeated += JumpedOn;
+    }
+
+	private void OnDisable()
+    {   
+        PlayerController.OnEnemyDefeated -= JumpedOn;
+    }
 
     protected virtual void Start()
     {
@@ -23,8 +34,11 @@ public class Enemy : MonoBehaviour
 		coll = GetComponent<Collider2D>();
     }
 
-    public void JumpedOn()
+    public void JumpedOn(Enemy enemy)
     {
+		if (enemy != this)
+			return;
+			
         score = Instantiate(damageText, transform.position, transform.rotation);
 
         anim.SetTrigger("explode");

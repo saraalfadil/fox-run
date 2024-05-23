@@ -7,7 +7,7 @@ public class PlayerController : MonoBehaviour
 {
 	public static event Action<int> OnGemCollected;
 	public static event Action<int> OnLifeCollected;
-	public static event Action<int> OnEnemyDefeated;
+	public static event Action<Enemy> OnEnemyDefeated;
     public Rigidbody2D rb;
     public Animator anim;
     public CircleCollider2D coll;
@@ -22,6 +22,7 @@ public class PlayerController : MonoBehaviour
     public bool isFalling = false;
 	public bool isHurt = false;
     private bool superSpeedEnabled = false;
+	public bool enteredSlide = false;
     [SerializeField] public LayerMask ground;
     [SerializeField] private LayerMask rock;
     [SerializeField] private int defeatEnemyScore = 100;
@@ -66,6 +67,18 @@ public class PlayerController : MonoBehaviour
         if(collision.tag == "Spikes")
         {
             HandleSpikesCollison();
+        }
+		if(collision.tag == "Slide")
+        {
+            enteredSlide = true;
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+		if(collision.tag == "Slide")
+        {
+            enteredSlide = false;
         }
     }
 
@@ -202,15 +215,14 @@ public class PlayerController : MonoBehaviour
     private void DefeatEnemy(GameObject enemyObject)
     {
 
-        // jump up
         if (isFalling)
-            movementScript.Jump();
-
-        OnEnemyDefeated?.Invoke(defeatEnemyScore);
-
-        // the enemy is defeated
+		{
+			movementScript.Jump();
+		}
+            
 		Enemy enemy = enemyObject.GetComponent<Enemy>();
-        enemy.JumpedOn();
+
+        OnEnemyDefeated?.Invoke(enemy);
 
     }
 
@@ -218,7 +230,6 @@ public class PlayerController : MonoBehaviour
     {
         footstep.Play();
     }
-
 
     private IEnumerator StartInvinciblePowerup()
     {

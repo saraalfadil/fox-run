@@ -16,6 +16,8 @@ TagManager:
   - Gem
   - BoxPowerup
   - BoxPowerupGems
+  - Slide
+  - Bridge
   layers:
   - Default
   - TransparentFX
@@ -25,7 +27,7 @@ TagManager:
   - UI
   - Ground
   - Rock
-  - 
+  - Fish
   - 
   - 
   - 
