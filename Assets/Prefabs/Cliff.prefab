@@ -146,4 +146,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 24e6a10bd284cf94898395ec077e3076, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  brokenCliff: {fileID: 8593891815744325758, guid: 85e3dd7615c7cca48a6a9fb53806e07e, type: 3}
+  brokenCliff: {fileID: 0}

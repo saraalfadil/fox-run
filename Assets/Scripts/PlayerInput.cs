@@ -17,7 +17,7 @@ public class PlayerInput : MonoBehaviour
             return;
 
 		float hDirection = Input.GetAxis("Horizontal");
-        float virection = Input.GetAxis("Vertical");
+        float vDirection = Input.GetAxis("Vertical");
 		bool jumpButton = Input.GetButtonDown("Jump");
 
         if (hDirection < 0)
@@ -29,7 +29,7 @@ public class PlayerInput : MonoBehaviour
             playerController.movementScript.MovePlayerRight();
         }
 
-        if (virection < 0)
+        if (vDirection < 0)
 		{
             playerController.movementScript.MovePlayerDown();
         }
