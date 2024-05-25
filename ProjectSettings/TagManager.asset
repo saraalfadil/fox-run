@@ -18,6 +18,7 @@ TagManager:
   - BoxPowerupGems
   - Slide
   - Bridge
+  - BoxPowerupLife
   layers:
   - Default
   - TransparentFX
