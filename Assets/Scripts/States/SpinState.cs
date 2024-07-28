@@ -15,6 +15,7 @@ public class SpinState : IState
 	{
 		player.anim.SetInteger("state", (int)playerState);
 		player.movementScript.speed = 15f;
+		player.movementScript.MovePlayerRight();
 	}
 	public void Update()
 	{

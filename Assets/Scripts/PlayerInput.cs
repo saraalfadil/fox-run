@@ -13,7 +13,7 @@ public class PlayerInput : MonoBehaviour
 			return;
 
 		// Ignore input if player is hurt or level has ended
-        if (playerController.isHurt || PermanentUI.perm.endLevel)
+        if (playerController.isHurt || PermanentUI.perm.endLevel || playerController.enteredSlide)
             return;
 
 		float hDirection = Input.GetAxis("Horizontal");
