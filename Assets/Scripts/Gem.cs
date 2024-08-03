@@ -22,6 +22,7 @@ public class Gem : MonoBehaviour
 
         if (temporary)
             StartCoroutine(SelfDestruct());
+		
     }
 
     public void Collected()

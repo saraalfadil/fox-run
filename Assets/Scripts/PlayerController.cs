@@ -142,7 +142,7 @@ public class PlayerController : MonoBehaviour
             HandleBounce();
         }
 
-        if (other.gameObject.tag == "Gem" && !healthScript.preventDamage)
+        if (other.gameObject.tag == "Gem")
         {
             CollectGem(other.gameObject);
         }
