@@ -15,6 +15,7 @@ public class JumpState : IState
 	public void Enter()
 	{
 		player.anim.SetInteger("state", (int)playerState);
+		player.state = PlayerState.jumping;
 
 		Debug.Log("JumpState");
 	}
@@ -26,5 +27,8 @@ public class JumpState : IState
 			player.playerStateMachine.TransitionTo(player.playerStateMachine.fallState);
 		}
 	}
-	public void Exit(){}
+	public void Exit()
+	{
+		player.state = PlayerState.idle;
+	}
 }
