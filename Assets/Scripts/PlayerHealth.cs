@@ -5,7 +5,6 @@ using UnityEngine;
 
 public class PlayerHealth : MonoBehaviour
 {
-	public static event Action OnGameOver;
 	public static event Action OnLifeLost;
 	public static event Action OnGemsLost;
     public bool preventDamage = false;
@@ -26,12 +25,6 @@ public class PlayerHealth : MonoBehaviour
         if (preventDamage)
             return;
 
-		if (PermanentUI.perm.health <= 0) 
-		{
-			OnGameOver?.Invoke(); 
-			return;
-		}
-
        	HandleTakeDamage();
     }
 
@@ -49,7 +42,7 @@ public class PlayerHealth : MonoBehaviour
 			// Disable shield
             shield.SetActive(false);
 		}
-		else 
+		else
 		{
 			TakeDamage();
 		}

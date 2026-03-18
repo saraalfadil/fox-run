@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System;
 
 public class PermanentUI : MonoBehaviour
 {
@@ -17,18 +18,19 @@ public class PermanentUI : MonoBehaviour
     private Color32 originalColor;
 	private Color32 dangerColor;
     public bool endLevel;
+    public static event Action OnGameOver;
 
     private void OnEnable()
     {
         PlayerController.OnGemCollected += IncreaseGemCount;
-		PlayerController.OnLifeCollected += IncreaseHealth;
-		PlayerController.OnEnemyDefeated += IncreaseScore;
-		PlayerHealth.OnLifeLost += DecreaseHealth;
-		PlayerHealth.OnGemsLost += ResetGemCount;
+        PlayerController.OnLifeCollected += IncreaseHealth;
+        PlayerController.OnEnemyDefeated += IncreaseScore;
+        PlayerHealth.OnLifeLost += DecreaseHealth;
+        PlayerHealth.OnGemsLost += ResetGemCount;
     }
 
     private void OnDisable()
-    {   
+    {
         PlayerController.OnGemCollected -= IncreaseGemCount;
 		PlayerController.OnLifeCollected -= IncreaseHealth;
 		PlayerController.OnEnemyDefeated -= IncreaseScore;
@@ -55,7 +57,7 @@ public class PermanentUI : MonoBehaviour
     }
 
     public void Update()
-    {	
+    {
 		GetStats();
 
         GetLabelColor();
@@ -109,6 +111,12 @@ public class PermanentUI : MonoBehaviour
 		if (gems > 1)
 			return;
 
-		health -= 1;
+		if (health <= 0)
+		{
+			OnGameOver?.Invoke();
+			return;
+		}
+
+        health -= 1;
     }
 }

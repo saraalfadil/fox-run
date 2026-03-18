@@ -5,7 +5,6 @@ using UnityEngine.SceneManagement;
 
 public class EndLevel : MonoBehaviour
 {
-
     [SerializeField] private string sceneToLoad;
     [SerializeField] private Canvas endLevel;
     private CanvasGroup endLevelCanvasGroup;

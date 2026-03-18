@@ -11,12 +11,12 @@ public class EndGame : MonoBehaviour
 
     private void OnEnable()
     {
-        PlayerHealth.OnGameOver += HandleEndGame;
+        PermanentUI.OnGameOver += HandleEndGame;
     }
 
     private void OnDisable()
-    {   
-        PlayerHealth.OnGameOver -= HandleEndGame;
+    {
+        PermanentUI.OnGameOver -= HandleEndGame;
     }
 
     public void HandleEndGame()
