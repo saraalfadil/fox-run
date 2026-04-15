@@ -45,15 +45,17 @@ jobs:
           targetPlatform: StandaloneWindows64
           allowDirtyBuild: true
 
+      # Remove DoNotShip files
+      - name: Remove DoNotShip files
+        run: |
+          sudo chmod -R u+w build/StandaloneWindows64/StandaloneWindows64_BurstDebugInformation_DoNotShip || true
+          sudo rm -rf build/StandaloneWindows64/StandaloneWindows64_BurstDebugInformation_DoNotShip
+
       # Output
       - uses: actions/upload-artifact@v4
         with:
           name: Build
           path: build
-
-      # Remove DoNotShip files
-      - name: Remove DoNotShip files
-        run: rm -rf build/StandaloneWindows64/StandaloneWindows64_BurstDebugInformation_DoNotShip
 
   itchio-upload:
     runs-on: ubuntu-latest
