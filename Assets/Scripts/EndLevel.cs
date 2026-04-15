@@ -16,7 +16,6 @@ public class EndLevel : MonoBehaviour
             //SceneManager.LoadScene(sceneToLoad);
 
             ShowEndLevel();
-
         }
     }
 

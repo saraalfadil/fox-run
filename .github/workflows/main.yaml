@@ -50,3 +50,24 @@ jobs:
         with:
           name: Build
           path: build
+
+      # Remove DoNotShip files
+      - name: Remove DoNotShip files
+        run: rm -rf build/StandaloneWindows64/StandaloneWindows64_BurstDebugInformation_DoNotShip
+
+  itchio-upload:
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.event_name == 'push'
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: Build
+          path: build
+      - name: Setup butler
+        uses: remarkablegames/setup-butler@v2
+      - name: Upload to itch.io
+        run: butler push build/StandaloneWindows64/ ${{ vars.ITCH_IO_PROJECT }}
+        env:
+          BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
